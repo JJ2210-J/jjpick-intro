@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+  <rect width="640" height="360" rx="24" fill="#FBF4EA"/>
+
+  <!-- 선반 -->
+  <rect x="24" y="300" width="592" height="12" rx="6" fill="#E7D3BC"/>
+
+  <!-- 리빙: 화분 -->
+  <ellipse cx="50" cy="236" rx="9" ry="24" transform="rotate(-25 50 236)" fill="#8FA37E"/>
+  <ellipse cx="68" cy="236" rx="9" ry="24" transform="rotate(25 68 236)" fill="#7E9470"/>
+  <ellipse cx="59" cy="226" rx="9" ry="28" fill="#9BB08A"/>
+  <rect x="40" y="258" width="38" height="42" rx="7" fill="#C96E54"/>
+  <rect x="36" y="254" width="46" height="10" rx="5" fill="#A9573F"/>
+
+  <!-- 주방: 냄비 -->
+  <g stroke="#D9B8A6" stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M140 204 q-8 -12 0 -24 q8 -12 0 -24"/>
+    <path d="M166 204 q-8 -12 0 -24 q8 -12 0 -24"/>
+    <path d="M192 204 q-8 -12 0 -24 q8 -12 0 -24"/>
+  </g>
+  <rect x="90" y="248" width="26" height="10" rx="5" fill="#A9573F"/>
+  <rect x="216" y="248" width="26" height="10" rx="5" fill="#A9573F"/>
+  <rect x="108" y="236" width="116" height="64" rx="12" fill="#C96E54"/>
+  <rect x="100" y="224" width="132" height="14" rx="7" fill="#A9573F"/>
+  <rect x="152" y="210" width="28" height="14" rx="5" fill="#A9573F"/>
+
+  <!-- 추천 표시 -->
+  <path d="M238 122 l-11 -11 a6.5 6.5 0 0 1 11 -8 a6.5 6.5 0 0 1 11 8 z" fill="#E08E74"/>
+
+  <!-- 짧은 영상이 재생되는 휴대폰 -->
+  <rect x="262" y="64" width="116" height="236" rx="18" fill="#3A322C"/>
+  <rect x="270" y="78" width="100" height="208" rx="11" fill="#C96E54"/>
+  <rect x="304" y="69" width="32" height="4" rx="2" fill="#5A4E45"/>
+  <circle cx="320" cy="162" r="26" fill="#FFFCF7"/>
+  <path d="M311 148 L337 162 L311 176 Z" fill="#C96E54"/>
+  <rect x="282" y="236" width="76" height="9" rx="4.5" fill="#FFFCF7" opacity="0.9"/>
+  <rect x="282" y="252" width="48" height="9" rx="4.5" fill="#FFFCF7" opacity="0.6"/>
+
+  <!-- 영상에서 추천 모음으로 이동 -->
+  <path d="M384 150 C 414 150, 414 104, 440 104" stroke="#C96E54" stroke-width="3" stroke-dasharray="6 6" fill="none" stroke-linecap="round"/>
+  <path d="M432 97 L442 104 L432 111" stroke="#C96E54" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 추천 모음 카드 -->
+  <rect x="448" y="44" width="160" height="120" rx="14" fill="#FFFCF7" stroke="#EFE6D8" stroke-width="2"/>
+  <rect x="462" y="58" width="24" height="24" rx="7" fill="#E9B98F"/>
+  <rect x="496" y="61" width="92" height="7" rx="3.5" fill="#E7D3BC"/>
+  <rect x="496" y="73" width="60" height="7" rx="3.5" fill="#F3E9D9"/>
+  <rect x="462" y="92" width="24" height="24" rx="7" fill="#C96E54"/>
+  <rect x="496" y="95" width="92" height="7" rx="3.5" fill="#E7D3BC"/>
+  <rect x="496" y="107" width="60" height="7" rx="3.5" fill="#F3E9D9"/>
+  <rect x="462" y="126" width="24" height="24" rx="7" fill="#8FA37E"/>
+  <rect x="496" y="129" width="92" height="7" rx="3.5" fill="#E7D3BC"/>
+  <rect x="496" y="141" width="60" height="7" rx="3.5" fill="#F3E9D9"/>
+
+  <!-- 가전: 토스터 -->
+  <rect x="468" y="186" width="28" height="44" rx="8" fill="#E9B98F"/>
+  <rect x="520" y="194" width="28" height="36" rx="8" fill="#E9B98F"/>
+  <rect x="440" y="214" width="136" height="86" rx="22" fill="#EFE6D8" stroke="#D9C6AE" stroke-width="3"/>
+  <rect x="464" y="224" width="36" height="8" rx="4" fill="#CDBBA3"/>
+  <rect x="516" y="224" width="36" height="8" rx="4" fill="#CDBBA3"/>
+  <circle cx="508" cy="264" r="11" fill="#C96E54"/>
+  <rect x="576" y="240" width="16" height="10" rx="4" fill="#A9573F"/>
+</svg>
