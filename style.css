@@ -119,7 +119,7 @@ main,
   padding: 32px;
   background-color: #fffcf7;
   border: 1px solid #efe6d8;
-  border-radius: 20px;
+  border-radius: 18px;
 }
 
 .content-section h2 {
@@ -149,10 +149,10 @@ main,
   height: auto;
 }
 
-/* ===== 주요 기능 카드 ===== */
+/* ===== 주요 기능 카드: 허브 상품 카드처럼 아이콘 칸 ===== */
 .feature-list {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -160,11 +160,22 @@ main,
 
 .feature-card {
   flex: 1;
-  padding: 24px;
-  background-color: #fdf6ef;
-  border: 1px solid #efe0d0;
-  border-top: 4px solid #c96e54;
-  border-radius: 16px;
+  padding: 20px;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 18px;
+}
+
+.feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  margin-bottom: 14px;
+  font-size: 28px;
+  background-color: #f3e9d9;
+  border-radius: 14px;
 }
 
 .feature-card h3 {
@@ -176,19 +187,39 @@ main,
   color: #6f655c;
 }
 
-/* ===== 이용 방법 ===== */
+/* ===== 이용 방법: 허브 상품 번호처럼 동그란 번호 배지 ===== */
 .steps-list {
   margin: 0;
   padding: 0;
-  list-style-position: inside;
+  list-style: none;
+  counter-reset: step;
 }
 
 .steps-list li {
+  display: flex;
+  align-items: center;
+  gap: 13px;
   margin-bottom: 12px;
-  padding: 14px 18px;
-  background-color: #fdf6ef;
-  border: 1px solid #efe0d0;
-  border-radius: 12px;
+  padding: 14px;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 18px;
+  counter-increment: step;
+}
+
+.steps-list li::before {
+  content: counter(step);
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  background-color: #a9573f;
+  border-radius: 50%;
 }
 
 .steps-list li:last-child {
@@ -196,11 +227,6 @@ main,
 }
 
 /* ===== 추천 요청 입력 영역 ===== */
-.request-section {
-  background-color: #f6ebdc;
-  border-color: #e7d3bc;
-}
-
 .request-section p {
   margin: 0 0 16px;
 }
@@ -209,7 +235,11 @@ main,
   display: flex;
   gap: 12px;
   align-items: flex-end;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 18px;
 }
 
 .item-field {
@@ -268,9 +298,19 @@ main,
   transform: translateY(1px);
 }
 
+/* 안내 문구: 허브의 광고 고지 박스 모양 */
 .request-section .request-note {
   margin: 0;
-  color: #6f655c;
+  padding: 14px 16px;
+  text-align: center;
+  color: #8a5a3c;
+  background-color: #f6ebdc;
+  border: 1px solid #e7d3bc;
+  border-radius: 14px;
+}
+
+.request-note small {
+  font-size: 13px;
 }
 
 /* ===== footer ===== */
