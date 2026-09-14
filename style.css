@@ -153,15 +153,17 @@ main,
 
 /* ===== 주요 기능 카드: 허브 상품 카드처럼 아이콘 칸 ===== */
 .feature-list {
-  display: flex;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: stretch;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .feature-card {
-  flex: 1;
+  min-width: 0;
   padding: 20px;
   background-color: #fbf4ea;
   border: 1px solid #efe6d8;
