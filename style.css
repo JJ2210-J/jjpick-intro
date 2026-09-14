@@ -332,3 +332,78 @@ main,
 .site-footer a {
   font-weight: 700;
 }
+
+/* ===== 반응형: 768px 이하 ===== */
+@media (max-width: 768px) {
+  .site-header {
+    padding-top: 32px;
+    padding-bottom: 24px;
+  }
+
+  .brand-mark {
+    width: 72px;
+    height: 72px;
+    font-size: 26px;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  .header-description {
+    font-size: 16px;
+  }
+
+  /* 내비게이션을 세로로 배치 */
+  .site-nav ul {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .site-nav a {
+    display: block;
+    padding: 10px 16px;
+  }
+
+  .content-section {
+    margin-bottom: 20px;
+    padding: 24px 20px;
+  }
+
+  /* 서비스 소개: 그림을 글 아래로 */
+  .about-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .service-image {
+    align-self: center;
+  }
+
+  /* 기능 카드를 한 열로 배치 */
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* 입력창과 버튼을 세로로 배치 */
+  .request-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-button {
+    width: 100%;
+    min-height: 48px;
+  }
+}
