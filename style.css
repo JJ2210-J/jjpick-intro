@@ -38,3 +38,86 @@ h3 {
 a {
   color: #a9573f;
 }
+
+/* ===== 공통 너비: header, main, footer ===== */
+.site-header,
+main,
+.site-footer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* ===== header ===== */
+.site-header {
+  padding-top: 56px;
+  padding-bottom: 32px;
+}
+
+.header-description {
+  margin: 0 0 24px;
+  font-size: 18px;
+  color: #6f655c;
+}
+
+/* ===== 페이지 내부 이동 메뉴 ===== */
+.site-nav ul {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav a {
+  display: inline-block;
+  padding: 8px 16px;
+  font-weight: 700;
+  color: #a9573f;
+  text-decoration: none;
+  background-color: #fffcf7;
+  border: 1px solid #e7d3bc;
+  border-radius: 999px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.site-nav a:hover {
+  color: #ffffff;
+  background-color: #a9573f;
+}
+
+.site-nav a:focus {
+  outline: 3px solid #a9573f;
+  outline-offset: 2px;
+}
+
+/* ===== 섹션 카드 ===== */
+.content-section {
+  margin-bottom: 32px;
+  padding: 32px;
+  background-color: #fffcf7;
+  border: 1px solid #efe6d8;
+  border-radius: 20px;
+}
+
+.content-section h2 {
+  padding-left: 14px;
+  border-left: 6px solid #c96e54;
+}
+
+/* ===== footer ===== */
+.site-footer {
+  padding-top: 16px;
+  padding-bottom: 40px;
+  text-align: center;
+  color: #6f655c;
+}
+
+.site-footer p {
+  margin: 4px 0;
+}
+
+.site-footer a {
+  font-weight: 700;
+}
