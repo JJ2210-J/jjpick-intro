@@ -21,7 +21,9 @@ h3 {
 
 h1 {
   margin-bottom: 12px;
+  font-family: "Nanum Myeongjo", serif;
   font-size: 44px;
+  font-weight: 800;
   color: #a9573f;
 }
 
@@ -49,10 +51,26 @@ main,
   padding-right: 24px;
 }
 
-/* ===== header ===== */
+/* ===== header: JJ픽 허브 프로필처럼 가운데 정렬 ===== */
 .site-header {
   padding-top: 56px;
   padding-bottom: 32px;
+  text-align: center;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 14px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #c96e54;
+  border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(201, 110, 84, 0.3);
 }
 
 .header-description {
@@ -61,10 +79,11 @@ main,
   color: #6f655c;
 }
 
-/* ===== 페이지 내부 이동 메뉴 ===== */
+/* ===== 페이지 내부 이동 메뉴: 허브의 필터 칩 모양 ===== */
 .site-nav ul {
   display: flex;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -72,19 +91,21 @@ main,
 
 .site-nav a {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 7px 15px;
+  font-size: 14px;
   font-weight: 700;
-  color: #a9573f;
+  color: #6f655c;
   text-decoration: none;
   background-color: #fffcf7;
-  border: 1px solid #e7d3bc;
+  border: 1px solid #efe6d8;
   border-radius: 999px;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .site-nav a:hover {
   color: #ffffff;
   background-color: #a9573f;
+  border-color: #a9573f;
 }
 
 .site-nav a:focus {
