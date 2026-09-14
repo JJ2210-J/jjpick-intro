@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="JJ픽은 주방·가전·리빙 살림 꿀템을 짧은 영상으로 소개하고, 영상에 나온 제품을 한 페이지에 모아 보여 주는 추천 서비스입니다.">
   <title>JJ픽 | 서비스 소개</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!--
@@ -15,12 +16,12 @@
     정보 순서: 서비스 이름·한 줄 소개 → 이동 메뉴 → 서비스 소개 → 주요 기능 → 이용 방법 → 추천 요청
   -->
   <!-- 서비스 이름과 한 줄 소개 -->
-  <header id="top">
+  <header id="top" class="site-header">
     <h1>JJ픽</h1>
-    <p>짧은 영상으로 확인하고, 한 페이지에서 고르는 주방·가전·리빙 살림 꿀템 추천</p>
+    <p class="header-description">짧은 영상으로 확인하고, 한 페이지에서 고르는 주방·가전·리빙 살림 꿀템 추천</p>
 
     <!-- 페이지 내부 이동 구조 -->
-    <nav aria-label="페이지 내부 이동">
+    <nav class="site-nav" aria-label="페이지 내부 이동">
       <ul>
         <li><a href="#about">서비스 소개</a></li>
         <li><a href="#features">주요 기능</a></li>
@@ -32,35 +33,39 @@
 
   <main>
     <!-- 서비스 소개 -->
-    <section id="about">
+    <section id="about" class="content-section">
       <h2>서비스 소개</h2>
-      <h3>이런 분을 위한 서비스예요</h3>
-      <p>
-        주방·가전·리빙 제품을 사려는 사람은 긴 리뷰를 모두 읽기 어렵고,
-        숏츠나 릴스로 본 제품은 영상에 링크가 없어 다시 찾기 번거롭습니다.
-      </p>
-      <p>
-        JJ픽은 살림에 진짜 도움이 되는 제품을 짧은 영상으로 소개하고,
-        영상에 나온 제품을 추천 모음 페이지 한곳에 정리해 프로필 링크 하나로 찾을 수 있게 합니다.
-      </p>
-      <!-- 이미지 1장과 대체 텍스트 -->
-      <img src="./assets/images/jjpick-intro.svg" width="320" height="180"
-           alt="짧은 영상에서 본 주방·가전·리빙 제품이 한 페이지 추천 목록으로 이어지는 JJ픽 이용 흐름">
+      <div class="about-layout">
+        <div class="about-text">
+          <h3>이런 분을 위한 서비스예요</h3>
+          <p>
+            주방·가전·리빙 제품을 사려는 사람은 긴 리뷰를 모두 읽기 어렵고,
+            숏츠나 릴스로 본 제품은 영상에 링크가 없어 다시 찾기 번거롭습니다.
+          </p>
+          <p>
+            JJ픽은 살림에 진짜 도움이 되는 제품을 짧은 영상으로 소개하고,
+            영상에 나온 제품을 추천 모음 페이지 한곳에 정리해 프로필 링크 하나로 찾을 수 있게 합니다.
+          </p>
+        </div>
+        <!-- 이미지 1장과 대체 텍스트 -->
+        <img class="service-image" src="./assets/images/jjpick-intro.svg" width="320" height="180"
+             alt="짧은 영상에서 본 주방·가전·리빙 제품이 한 페이지 추천 목록으로 이어지는 JJ픽 이용 흐름">
+      </div>
     </section>
 
     <!-- 주요 기능 3개 -->
-    <section id="features">
+    <section id="features" class="content-section">
       <h2>주요 기능</h2>
-      <ul>
-        <li>
+      <ul class="feature-list">
+        <li class="feature-card">
           <h3>짧은 영상으로 확인하기</h3>
           <p>제품의 특징과 쓰임새를 짧은 영상으로 보고, 긴 리뷰 없이 핵심을 빠르게 파악합니다.</p>
         </li>
-        <li>
+        <li class="feature-card">
           <h3>한 페이지에서 모아 보기</h3>
           <p>영상에 나온 제품을 추천 모음 페이지 한곳에서 주방·가전·리빙 카테고리와 함께 확인합니다.</p>
         </li>
-        <li>
+        <li class="feature-card">
           <h3>판매처별로 골라 보기</h3>
           <p>쿠팡·오늘의집 등 원하는 판매처를 골라 해당 제품만 모아 봅니다.</p>
         </li>
@@ -68,9 +73,9 @@
     </section>
 
     <!-- 이용 방법 3단계 -->
-    <section id="how-to">
+    <section id="how-to" class="content-section">
       <h2>이용 방법</h2>
-      <ol>
+      <ol class="steps-list">
         <li>인스타그램, 유튜브 쇼츠, 네이버 클립에서 JJ픽 영상을 봅니다.</li>
         <li>영상 속 안내에 따라 프로필 링크를 눌러 추천 모음 페이지로 들어갑니다.</li>
         <li>판매처를 골라 영상에서 본 제품을 찾고, 가격과 설명을 확인합니다.</li>
@@ -78,19 +83,21 @@
     </section>
 
     <!-- 최소 입력 영역 -->
-    <section id="request">
+    <section id="request" class="content-section request-section">
       <h2>추천 요청</h2>
       <p>고민 중인 살림템을 입력하고 추천을 요청하세요.</p>
-      <form action="#request" method="get">
-        <label for="item">고민 중인 제품</label>
-        <input type="text" id="item" name="item" placeholder="예: 에어프라이어">
-        <button type="submit">추천 요청하기</button>
+      <form class="request-form" action="#request" method="get">
+        <label class="item-field" for="item">
+          고민 중인 제품
+          <input type="text" id="item" name="item" placeholder="예: 에어프라이어">
+        </label>
+        <button class="primary-button" type="submit">추천 요청하기</button>
       </form>
-      <p><small>수업 실습용 페이지라 지금은 요청이 실제로 접수되지 않습니다.</small></p>
+      <p class="request-note"><small>수업 실습용 페이지라 지금은 요청이 실제로 접수되지 않습니다.</small></p>
     </section>
   </main>
 
-  <footer>
+  <footer class="site-footer">
     <p><a href="#top">맨 위로</a></p>
     <p><small>© 2026 JJ픽</small></p>
   </footer>
