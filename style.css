@@ -106,6 +106,74 @@ main,
   border-left: 6px solid #c96e54;
 }
 
+/* ===== 서비스 소개: 글과 이미지 가로 배치 ===== */
+.about-layout {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-text p {
+  margin: 0 0 12px;
+}
+
+.service-image {
+  display: block;
+  width: 360px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===== 주요 기능 카드 ===== */
+.feature-list {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-card {
+  flex: 1;
+  padding: 24px;
+  background-color: #fdf6ef;
+  border: 1px solid #efe0d0;
+  border-top: 4px solid #c96e54;
+  border-radius: 16px;
+}
+
+.feature-card h3 {
+  color: #a9573f;
+}
+
+.feature-card p {
+  margin: 0;
+  color: #6f655c;
+}
+
+/* ===== 이용 방법 ===== */
+.steps-list {
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+.steps-list li {
+  margin-bottom: 12px;
+  padding: 14px 18px;
+  background-color: #fdf6ef;
+  border: 1px solid #efe0d0;
+  border-radius: 12px;
+}
+
+.steps-list li:last-child {
+  margin-bottom: 0;
+}
+
 /* ===== footer ===== */
 .site-footer {
   padding-top: 16px;
