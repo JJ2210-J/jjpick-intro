@@ -230,6 +230,153 @@ main,
   margin-bottom: 0;
 }
 
+/* ===== 추천 상품: JJ픽 추천 모음 화면 ===== */
+.section-lead {
+  margin: 0 0 16px;
+  color: #6f655c;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chip {
+  padding: 7px 15px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6f655c;
+  background-color: #fffcf7;
+  border: 1px solid #efe6d8;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.chip:hover {
+  border-color: #a9573f;
+}
+
+.chip:focus {
+  outline: 3px solid #a9573f;
+  outline-offset: 2px;
+}
+
+.chip.is-active {
+  color: #ffffff;
+  background-color: #a9573f;
+  border-color: #a9573f;
+}
+
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  counter-reset: pick;
+}
+
+.product-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 14px;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 18px;
+  counter-increment: pick;
+}
+
+/* 필터로 숨긴 상품은 번호 계산에서도 빠진다 */
+.product-card[hidden] {
+  display: none;
+}
+
+.product-card::before {
+  content: counter(pick);
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  background-color: #b0341f;
+  border-radius: 50%;
+}
+
+.product-card[data-store="ohou"]::before {
+  background-color: #1c7569;
+}
+
+.product-thumb {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  font-size: 26px;
+  background-color: #f3e9d9;
+  border-radius: 14px;
+}
+
+.product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-meta {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6f655c;
+}
+
+.store-badge {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 7px;
+  color: #b0341f;
+  background-color: #fbebe7;
+  border-radius: 6px;
+}
+
+.product-card[data-store="ohou"] .store-badge {
+  color: #1c7569;
+  background-color: #e2f4f1;
+}
+
+.product-name {
+  margin: 2px 0;
+  font-size: 16px;
+}
+
+.product-desc {
+  margin: 0;
+  font-size: 13px;
+  color: #6f655c;
+}
+
+.product-price {
+  margin: 4px 0 0;
+  font-weight: 800;
+  color: #a9573f;
+}
+
+.picks-note {
+  margin: 0;
+  color: #6f655c;
+}
+
 /* ===== 추천 요청 입력 영역 ===== */
 .request-section p {
   margin: 0 0 16px;
@@ -394,6 +541,17 @@ main,
   /* 기능 카드를 한 열로 배치 */
   .feature-list {
     grid-template-columns: 1fr;
+  }
+
+  /* 추천 상품도 한 열로, 썸네일은 조금 작게 */
+  .product-list {
+    grid-template-columns: 1fr;
+  }
+
+  .product-thumb {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
   }
 
   /* 입력창과 버튼을 세로로 배치 */

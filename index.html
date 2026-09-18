@@ -6,14 +6,15 @@
   <meta name="description" content="JJ픽은 주방·가전·리빙 살림 꿀템을 짧은 영상으로 소개하고, 영상에 나온 제품을 한 페이지에 모아 보여 주는 추천 서비스입니다.">
   <title>JJ픽 | 서비스 소개</title>
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <!--
     UX 계획
     사용자: 주방·가전·리빙 제품을 사기 전에 긴 리뷰 대신 짧은 영상으로 빠르게 확인하고 싶은 사람
     목적: JJ픽이 어떤 서비스인지 이해하고, 영상에서 본 제품을 한곳에서 찾는 방법을 알게 한다
-    핵심 행동: 메뉴로 원하는 내용으로 이동하고, 고민 중인 살림템을 입력해 추천을 요청한다
-    정보 순서: 서비스 이름·한 줄 소개 → 이동 메뉴 → 서비스 소개 → 주요 기능 → 이용 방법 → 추천 요청
+    핵심 행동: 메뉴로 원하는 내용으로 이동하고, 판매처별로 추천 상품을 살펴본 뒤, 고민 중인 살림템을 입력해 추천을 요청한다
+    정보 순서: 서비스 이름·한 줄 소개 → 이동 메뉴 → 서비스 소개 → 주요 기능 → 이용 방법 → 추천 상품 → 추천 요청
   -->
   <!-- 서비스 이름과 한 줄 소개 -->
   <header id="top" class="site-header">
@@ -27,6 +28,7 @@
         <li><a href="#about">서비스 소개</a></li>
         <li><a href="#features">주요 기능</a></li>
         <li><a href="#how-to">이용 방법</a></li>
+        <li><a href="#picks">추천 상품</a></li>
         <li><a href="#request">추천 요청</a></li>
       </ul>
     </nav>
@@ -84,6 +86,76 @@
         <li>영상 속 안내에 따라 프로필 링크를 눌러 추천 모음 페이지로 들어갑니다.</li>
         <li>판매처를 골라 영상에서 본 제품을 찾고, 가격과 설명을 확인합니다.</li>
       </ol>
+    </section>
+
+    <!-- 추천 상품: JJ픽 추천 모음 화면을 예시 상품으로 재현 -->
+    <section id="picks" class="content-section">
+      <h2>추천 상품</h2>
+      <p class="section-lead">JJ픽 추천 모음 페이지를 예시 상품으로 옮겨 왔어요. 판매처를 골라 보세요.</p>
+
+      <div class="filter-chips" role="group" aria-label="판매처로 거르기">
+        <button type="button" class="chip is-active" data-store="all" aria-pressed="true">전체</button>
+        <button type="button" class="chip" data-store="coupang" aria-pressed="false">쿠팡</button>
+        <button type="button" class="chip" data-store="ohou" aria-pressed="false">오늘의집</button>
+      </div>
+
+      <ul class="product-list">
+        <li class="product-card" data-store="coupang">
+          <span class="product-thumb" aria-hidden="true">🍳</span>
+          <div class="product-info">
+            <p class="product-meta"><span class="store-badge">쿠팡</span> 주방</p>
+            <h3 class="product-name">스테인리스 멀티 프라이팬 28cm</h3>
+            <p class="product-desc">기름을 적게 써도 잘 눌어붙지 않아요</p>
+            <p class="product-price">32,900원</p>
+          </div>
+        </li>
+        <li class="product-card" data-store="ohou">
+          <span class="product-thumb" aria-hidden="true">🍱</span>
+          <div class="product-info">
+            <p class="product-meta"><span class="store-badge">오늘의집</span> 주방</p>
+            <h3 class="product-name">밀폐 유리 보관용기 6종</h3>
+            <p class="product-desc">전자레인지와 오븐에 그대로 쓸 수 있어요</p>
+            <p class="product-price">24,800원</p>
+          </div>
+        </li>
+        <li class="product-card" data-store="coupang">
+          <span class="product-thumb" aria-hidden="true">🍟</span>
+          <div class="product-info">
+            <p class="product-meta"><span class="store-badge">쿠팡</span> 가전</p>
+            <h3 class="product-name">에어프라이어 5.5L</h3>
+            <p class="product-desc">바스켓을 분리해서 씻기 쉬워요</p>
+            <p class="product-price">89,000원</p>
+          </div>
+        </li>
+        <li class="product-card" data-store="coupang">
+          <span class="product-thumb" aria-hidden="true">🧹</span>
+          <div class="product-info">
+            <p class="product-meta"><span class="store-badge">쿠팡</span> 가전</p>
+            <h3 class="product-name">무선 핸디 청소기</h3>
+            <p class="product-desc">소파 틈새와 차 안까지 가볍게 청소해요</p>
+            <p class="product-price">59,000원</p>
+          </div>
+        </li>
+        <li class="product-card" data-store="ohou">
+          <span class="product-thumb" aria-hidden="true">🧺</span>
+          <div class="product-info">
+            <p class="product-meta"><span class="store-badge">오늘의집</span> 리빙</p>
+            <h3 class="product-name">접이식 빨래 바구니</h3>
+            <p class="product-desc">쓰지 않을 땐 납작하게 접어 둘 수 있어요</p>
+            <p class="product-price">15,900원</p>
+          </div>
+        </li>
+        <li class="product-card" data-store="ohou">
+          <span class="product-thumb" aria-hidden="true">🛁</span>
+          <div class="product-info">
+            <p class="product-meta"><span class="store-badge">오늘의집</span> 리빙</p>
+            <h3 class="product-name">호텔식 순면 수건 5장</h3>
+            <p class="product-desc">도톰하지만 빨리 말라요</p>
+            <p class="product-price">19,900원</p>
+          </div>
+        </li>
+      </ul>
+      <p class="picks-note"><small>예시 상품이에요. 가격은 실제와 다를 수 있고, 판매처 링크는 연결하지 않았어요.</small></p>
     </section>
 
     <!-- 최소 입력 영역 -->
