@@ -449,6 +449,54 @@ main,
   transform: translateY(1px);
 }
 
+/* 요청이 끝난 버튼: 다시 누를 수 없음을 색과 커서로 보여 준다 */
+.primary-button:disabled,
+.primary-button:disabled:hover {
+  color: #ffffff;
+  background-color: #7a9a6b;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 5주차: 제출 결과 문구 — 처음엔 차분한 안내, 결과에 따라 색이 바뀐다 */
+.request-section .request-message {
+  padding: 12px 16px;
+  font-weight: 700;
+  color: #6b5e54;
+  background-color: #ffffff;
+  border: 1px solid #efe6d8;
+  border-radius: 12px;
+}
+
+.request-section .request-message.is-error {
+  color: #9b2c2c;
+  background-color: #fdecec;
+  border-color: #f3c7c7;
+}
+
+.request-section .request-message.is-info {
+  color: #7a4a12;
+  background-color: #fff4e0;
+  border-color: #f0d6a8;
+}
+
+.request-section .request-message.is-success {
+  color: #245c3a;
+  background-color: #e7f7ed;
+  border-color: #bfe3cc;
+}
+
+/* 입력이 잘못됐을 때 입력칸 테두리도 빨갛게 */
+.request-form input[aria-invalid="true"] {
+  border-color: #c0392b;
+}
+
+/* 이미 추천 모음에 있는 상품을 찾았을 때 그 카드를 강조 */
+.product-card.is-highlight {
+  border-color: #a9573f;
+  box-shadow: 0 0 0 3px #f1c9b8;
+}
+
 /* 안내 문구: 허브의 광고 고지 박스 모양 */
 .request-section .request-note {
   margin: 0;
