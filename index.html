@@ -12,7 +12,7 @@
     UX 계획
     사용자: 주방·가전·리빙 제품을 사기 전에 긴 리뷰 대신 짧은 영상으로 빠르게 확인하고 싶은 사람
     목적: JJ픽이 어떤 서비스인지 이해하고, 영상에서 본 제품을 한곳에서 찾는 방법을 알게 한다
-    핵심 행동: 메뉴로 원하는 내용으로 이동하고, 판매처별로 추천 상품을 살펴본 뒤, 고민 중인 살림템을 입력해 추천을 요청하고 결과를 바로 확인한다
+    핵심 행동: 메뉴로 원하는 내용으로 이동하고, 탭으로 주요 기능을 골라 읽고, 판매처별로 추천 상품을 살펴보며 마음에 드는 상품을 찜한 뒤, 고민 중인 살림템을 입력해 추천을 요청하고 결과를 바로 확인한다
     정보 순서: 서비스 이름·한 줄 소개 → 이동 메뉴 → 서비스 소개 → 주요 기능 → 이용 방법 → 추천 상품 → 추천 요청
   -->
   <!-- 서비스 이름과 한 줄 소개 -->
@@ -55,26 +55,51 @@
       </div>
     </section>
 
-    <!-- 주요 기능 3개 -->
+    <!-- 주요 기능 3개: 6주차에 탭으로 바꿔 누른 기능의 설명만 보여 준다 -->
     <section id="features" class="content-section">
       <h2>주요 기능</h2>
-      <ul class="feature-list">
-        <li class="feature-card">
-          <span class="feature-icon" aria-hidden="true">🎬</span>
+      <div class="tabs" role="tablist" aria-label="주요 기능 고르기">
+        <button id="tab-video" class="tab is-active" type="button" role="tab" aria-selected="true"
+                aria-controls="feature-video" data-target="#feature-video">🎬 영상으로 확인</button>
+        <button id="tab-collect" class="tab" type="button" role="tab" aria-selected="false"
+                aria-controls="feature-collect" data-target="#feature-collect">🧺 한 페이지 모음</button>
+        <button id="tab-store" class="tab" type="button" role="tab" aria-selected="false"
+                aria-controls="feature-store" data-target="#feature-store">🏷️ 판매처별 보기</button>
+      </div>
+
+      <div id="feature-video" class="panel is-active" role="tabpanel" aria-labelledby="tab-video">
+        <span class="feature-icon" aria-hidden="true">🎬</span>
+        <div class="panel-text">
           <h3>짧은 영상으로 확인하기</h3>
           <p>제품의 특징과 쓰임새를 짧은 영상으로 보고, 긴 리뷰 없이 핵심을 빠르게 파악합니다.</p>
-        </li>
-        <li class="feature-card">
-          <span class="feature-icon" aria-hidden="true">🧺</span>
+          <ul class="panel-points">
+            <li>실제로 써 보는 장면을 30초 안팎으로 보여 줘요.</li>
+            <li>인스타그램 릴스, 유튜브 쇼츠, 네이버 클립에 함께 올라와요.</li>
+          </ul>
+        </div>
+      </div>
+      <div id="feature-collect" class="panel" role="tabpanel" aria-labelledby="tab-collect" hidden>
+        <span class="feature-icon" aria-hidden="true">🧺</span>
+        <div class="panel-text">
           <h3>한 페이지에서 모아 보기</h3>
           <p>영상에 나온 제품을 추천 모음 페이지 한곳에서 주방·가전·리빙 카테고리와 함께 확인합니다.</p>
-        </li>
-        <li class="feature-card">
-          <span class="feature-icon" aria-hidden="true">🏷️</span>
+          <ul class="panel-points">
+            <li>영상 속 상품 번호와 추천 모음의 번호가 같아서 바로 찾을 수 있어요.</li>
+            <li>프로필 링크 하나만 누르면 들어갈 수 있어요.</li>
+          </ul>
+        </div>
+      </div>
+      <div id="feature-store" class="panel" role="tabpanel" aria-labelledby="tab-store" hidden>
+        <span class="feature-icon" aria-hidden="true">🏷️</span>
+        <div class="panel-text">
           <h3>판매처별로 골라 보기</h3>
           <p>쿠팡·오늘의집 등 원하는 판매처를 골라 해당 제품만 모아 봅니다.</p>
-        </li>
-      </ul>
+          <ul class="panel-points">
+            <li>상품마다 판매처 배지를 붙여 어디서 파는지 한눈에 보여요.</li>
+            <li>아래 <a href="#picks">추천 상품</a>에서 판매처 버튼을 직접 눌러 볼 수 있어요.</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <!-- 이용 방법 3단계 -->
@@ -98,6 +123,9 @@
         <button type="button" class="chip" data-store="ohou" aria-pressed="false">오늘의집</button>
       </div>
 
+      <!-- 6주차: 찜한 상품 수를 알려 주는 문구 -->
+      <p id="saveSummary" class="save-summary" aria-live="polite">마음에 드는 상품의 ♡ 찜하기를 눌러 보세요.</p>
+
       <ul class="product-list">
         <li class="product-card" data-store="coupang">
           <span class="product-thumb" aria-hidden="true">🍳</span>
@@ -105,7 +133,10 @@
             <p class="product-meta"><span class="store-badge">쿠팡</span> 주방</p>
             <h3 class="product-name">스테인리스 멀티 프라이팬 28cm</h3>
             <p class="product-desc">기름을 적게 써도 잘 눌어붙지 않아요</p>
-            <p class="product-price">32,900원</p>
+            <div class="product-actions">
+              <p class="product-price">32,900원</p>
+              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+            </div>
           </div>
         </li>
         <li class="product-card" data-store="ohou">
@@ -114,7 +145,10 @@
             <p class="product-meta"><span class="store-badge">오늘의집</span> 주방</p>
             <h3 class="product-name">밀폐 유리 보관용기 6종</h3>
             <p class="product-desc">전자레인지와 오븐에 그대로 쓸 수 있어요</p>
-            <p class="product-price">24,800원</p>
+            <div class="product-actions">
+              <p class="product-price">24,800원</p>
+              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+            </div>
           </div>
         </li>
         <li class="product-card" data-store="coupang">
@@ -123,7 +157,10 @@
             <p class="product-meta"><span class="store-badge">쿠팡</span> 가전</p>
             <h3 class="product-name">에어프라이어 5.5L</h3>
             <p class="product-desc">바스켓을 분리해서 씻기 쉬워요</p>
-            <p class="product-price">89,000원</p>
+            <div class="product-actions">
+              <p class="product-price">89,000원</p>
+              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+            </div>
           </div>
         </li>
         <li class="product-card" data-store="coupang">
@@ -132,7 +169,10 @@
             <p class="product-meta"><span class="store-badge">쿠팡</span> 가전</p>
             <h3 class="product-name">무선 핸디 청소기</h3>
             <p class="product-desc">소파 틈새와 차 안까지 가볍게 청소해요</p>
-            <p class="product-price">59,000원</p>
+            <div class="product-actions">
+              <p class="product-price">59,000원</p>
+              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+            </div>
           </div>
         </li>
         <li class="product-card" data-store="ohou">
@@ -141,7 +181,10 @@
             <p class="product-meta"><span class="store-badge">오늘의집</span> 리빙</p>
             <h3 class="product-name">접이식 빨래 바구니</h3>
             <p class="product-desc">쓰지 않을 땐 납작하게 접어 둘 수 있어요</p>
-            <p class="product-price">15,900원</p>
+            <div class="product-actions">
+              <p class="product-price">15,900원</p>
+              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+            </div>
           </div>
         </li>
         <li class="product-card" data-store="ohou">
@@ -150,7 +193,10 @@
             <p class="product-meta"><span class="store-badge">오늘의집</span> 리빙</p>
             <h3 class="product-name">호텔식 순면 수건 5장</h3>
             <p class="product-desc">도톰하지만 빨리 말라요</p>
-            <p class="product-price">19,900원</p>
+            <div class="product-actions">
+              <p class="product-price">19,900원</p>
+              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+            </div>
           </div>
         </li>
       </ul>
@@ -162,14 +208,23 @@
       <h2>추천 요청</h2>
       <p>고민 중인 살림템을 입력하고 추천을 요청하세요.</p>
       <form id="request-form" class="request-form" action="#request" method="get">
-        <label class="item-field" for="item">
-          고민 중인 제품
-          <input type="text" id="item" name="item" placeholder="예: 에어프라이어">
+        <div class="item-field">
+          <div class="item-label-row">
+            <label for="item">고민 중인 제품</label>
+            <!-- 6주차: 입력한 글자 수 -->
+            <span id="itemCount" class="item-count">0 / 20</span>
+          </div>
+          <input type="text" id="item" name="item" maxlength="20" placeholder="예: 에어프라이어">
+        </div>
+        <!-- 6주차: 안내를 확인해야 요청 버튼이 켜진다 -->
+        <label class="agree-row">
+          <input type="checkbox" id="agreeCheck">
+          요청은 실제로 접수되지 않는 수업 실습용이라는 점을 확인했어요.
         </label>
-        <button id="requestButton" class="primary-button" type="submit">추천 요청하기</button>
+        <button id="requestButton" class="primary-button" type="submit" disabled>추천 요청하기</button>
       </form>
       <!-- 5주차: 제출 결과를 알려 주는 문구(바뀌면 화면 읽기 프로그램도 읽어 준다) -->
-      <p id="requestMessage" class="request-message" aria-live="polite">고민 중인 제품을 입력한 뒤 추천을 요청해 주세요.</p>
+      <p id="requestMessage" class="request-message" aria-live="polite">안내 확인에 체크하면 추천을 요청할 수 있어요.</p>
       <p class="request-note"><small>수업 실습용 페이지라 지금은 요청이 실제로 접수되지 않습니다.</small></p>
     </section>
   </main>
