@@ -151,23 +151,81 @@ main,
   height: auto;
 }
 
-/* ===== 주요 기능 카드: 허브 상품 카드처럼 아이콘 칸 ===== */
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  align-items: stretch;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* ===== 6주차 주요 기능 탭: 고른 탭은 글자색과 아래 굵은 선으로 구분 ===== */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.feature-card {
-  min-width: 0;
-  padding: 20px;
+.tab {
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: #6f655c;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.tab:hover {
+  color: #ffffff;
+  background-color: #a9573f;
+  border-color: #a9573f;
+}
+
+.tab:focus {
+  outline: 3px solid #a9573f;
+  outline-offset: 2px;
+}
+
+.tab.is-active,
+.tab.is-active:hover {
+  color: #a9573f;
+  background-color: #ffffff;
+  border-color: #efe6d8;
+  border-bottom: 4px solid #a9573f;
+}
+
+.panel {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px;
   background-color: #fbf4ea;
   border: 1px solid #efe6d8;
   border-radius: 18px;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.panel-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel h3 {
+  color: #a9573f;
+}
+
+.panel p {
+  margin: 0 0 10px;
+  color: #6f655c;
+}
+
+.panel-points {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.panel-points li {
+  margin-bottom: 4px;
 }
 
 .feature-icon {
@@ -176,19 +234,10 @@ main,
   justify-content: center;
   width: 62px;
   height: 62px;
-  margin-bottom: 14px;
+  flex-shrink: 0;
   font-size: 28px;
   background-color: #f3e9d9;
   border-radius: 14px;
-}
-
-.feature-card h3 {
-  color: #a9573f;
-}
-
-.feature-card p {
-  margin: 0;
-  color: #6f655c;
 }
 
 /* ===== 이용 방법: 허브 상품 번호처럼 동그란 번호 배지 ===== */
@@ -367,9 +416,69 @@ main,
 }
 
 .product-price {
-  margin: 4px 0 0;
+  margin: 0;
   font-weight: 800;
   color: #a9573f;
+}
+
+/* ===== 6주차 찜하기: 누르면 글자·색·찜 개수 문구가 함께 바뀐다 ===== */
+.product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.save-button {
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a9573f;
+  background-color: #ffffff;
+  border: 1px solid #d9c6ae;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.save-button:hover {
+  border-color: #a9573f;
+}
+
+.save-button:focus {
+  outline: 3px solid #a9573f;
+  outline-offset: 2px;
+}
+
+.save-button.is-saved {
+  color: #ffffff;
+  background-color: #c96e54;
+  border-color: #c96e54;
+}
+
+.product-card.is-saved {
+  border-color: #e3b7a5;
+  background-color: #fdf0e8;
+}
+
+.save-summary {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6f655c;
+  background-color: #ffffff;
+  border: 1px solid #efe6d8;
+  border-radius: 12px;
+}
+
+.save-summary.has-saved {
+  color: #a9573f;
+  background-color: #fdf0e8;
+  border-color: #e3b7a5;
 }
 
 .picks-note {
@@ -383,9 +492,10 @@ main,
 }
 
 .request-form {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 16px;
+  align-items: center;
   margin-bottom: 16px;
   padding: 16px;
   background-color: #fbf4ea;
@@ -395,10 +505,47 @@ main,
 
 .item-field {
   display: flex;
-  flex: 1;
+  grid-column: 1 / -1;
   flex-direction: column;
   gap: 6px;
   font-weight: 700;
+}
+
+/* 6주차: 라벨 오른쪽에 글자 수 */
+.item-label-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.item-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #8a7d72;
+}
+
+.item-count.is-near-limit {
+  color: #b0341f;
+}
+
+/* 6주차: 안내 확인 체크박스 */
+.agree-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 14px;
+  color: #6f655c;
+  cursor: pointer;
+}
+
+.agree-row input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #a9573f;
+  cursor: pointer;
 }
 
 .request-form input[type="text"] {
@@ -449,13 +596,19 @@ main,
   transform: translateY(1px);
 }
 
-/* 요청이 끝난 버튼: 다시 누를 수 없음을 색과 커서로 보여 준다 */
+/* 6주차: 안내를 확인하기 전 버튼은 회색으로 꺼 둔다 */
 .primary-button:disabled,
 .primary-button:disabled:hover {
   color: #ffffff;
-  background-color: #7a9a6b;
+  background-color: #b5a99d;
   cursor: not-allowed;
   transform: none;
+}
+
+/* 요청이 끝난 버튼: 다시 누를 수 없음을 초록색으로 보여 준다 */
+.primary-button.is-done:disabled,
+.primary-button.is-done:disabled:hover {
+  background-color: #7a9a6b;
 }
 
 /* 5주차: 제출 결과 문구 — 처음엔 차분한 안내, 결과에 따라 색이 바뀐다 */
@@ -478,6 +631,13 @@ main,
   color: #7a4a12;
   background-color: #fff4e0;
   border-color: #f0d6a8;
+}
+
+/* 6주차: 안내를 확인해 요청할 준비가 됐을 때 */
+.request-section .request-message.is-ready {
+  color: #7a3f2d;
+  background-color: #fdf0e8;
+  border-color: #e3b7a5;
 }
 
 .request-section .request-message.is-success {
@@ -586,9 +746,22 @@ main,
     align-self: center;
   }
 
-  /* 기능 카드를 한 열로 배치 */
-  .feature-list {
-    grid-template-columns: 1fr;
+  /* 탭을 세로로 쌓고, 패널은 아이콘을 글 위로 */
+  .tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tab {
+    width: 100%;
+    text-align: left;
+    border-radius: 12px;
+  }
+
+  .panel {
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
   }
 
   /* 추천 상품도 한 열로, 썸네일은 조금 작게 */
@@ -602,10 +775,9 @@ main,
     font-size: 22px;
   }
 
-  /* 입력창과 버튼을 세로로 배치 */
+  /* 입력창·체크박스·버튼을 세로로 배치 */
   .request-form {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
   .primary-button {
