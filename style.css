@@ -491,24 +491,311 @@ main,
   margin: 0 0 16px;
 }
 
-.request-form {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px 16px;
+/* ===== 7주차: 추천 요청 흐름 ===== */
+
+/* 시작 화면 */
+.request-intro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
-  padding: 16px;
+  padding: 20px;
   background-color: #fbf4ea;
   border: 1px solid #efe6d8;
   border-radius: 18px;
 }
 
-.item-field {
+.intro-steps {
+  margin: 0;
+  padding-left: 22px;
+  color: #6f655c;
+}
+
+/* 위쪽 단계 표시: 지금 단계는 테라코타, 지난 단계는 초록 */
+.flow-steps {
   display: flex;
-  grid-column: 1 / -1;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  counter-reset: flow;
+}
+
+.flow-step {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #8a7d72;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 999px;
+  counter-increment: flow;
+}
+
+.flow-step::before {
+  content: counter(flow);
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 13px;
+  color: #ffffff;
+  background-color: #b5a99d;
+  border-radius: 50%;
+}
+
+.flow-step.is-current {
+  color: #a9573f;
+  background-color: #ffffff;
+  border-color: #a9573f;
+}
+
+.flow-step.is-current::before {
+  background-color: #a9573f;
+}
+
+.flow-step.is-done {
+  color: #245c3a;
+  border-color: #bfe3cc;
+}
+
+.flow-step.is-done::before {
+  content: "✓";
+  background-color: #4f8a5f;
+}
+
+.request-section .flow-progress {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6f655c;
+}
+
+.request-section .flow-progress.is-complete {
+  color: #245c3a;
+}
+
+/* 단계 상자 */
+.request-step {
+  margin-bottom: 16px;
+  padding: 20px;
+  background-color: #fbf4ea;
+  border: 1px solid #efe6d8;
+  border-radius: 18px;
+}
+
+.request-step[hidden],
+.request-intro[hidden],
+.request-flow[hidden] {
+  display: none;
+}
+
+.request-step h3 {
+  color: #a9573f;
+}
+
+.request-step h3:focus {
+  outline: none;
+}
+
+.required {
+  font-size: 13px;
+  color: #b0341f;
+}
+
+.optional {
+  font-size: 13px;
+  font-weight: 400;
+  color: #8a7d72;
+}
+
+.item-field,
+.option-field {
+  display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-bottom: 12px;
   font-weight: 700;
+}
+
+/* 카테고리 고르기: 고른 칸은 테라코타로 채운다 */
+.choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-weight: 700;
+}
+
+.choice {
+  position: relative;
+  cursor: pointer;
+}
+
+.choice input {
+  position: absolute;
+  opacity: 0;
+}
+
+.choice span {
+  display: inline-block;
+  padding: 9px 16px;
+  font-weight: 700;
+  color: #6f655c;
+  background-color: #ffffff;
+  border: 1px solid #d9c6ae;
+  border-radius: 999px;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.choice:hover span {
+  border-color: #a9573f;
+}
+
+.choice input:focus-visible + span {
+  outline: 3px solid #a9573f;
+  outline-offset: 2px;
+}
+
+.choice input:checked + span {
+  color: #ffffff;
+  background-color: #a9573f;
+  border-color: #a9573f;
+}
+
+.choice-group.has-error .choice span {
+  border-color: #c0392b;
+}
+
+.request-section .field-error {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #9b2c2c;
+}
+
+.request-section .field-error:empty {
+  display: none;
+}
+
+/* 이전·다음 버튼 줄 */
+.step-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.secondary-button {
+  padding: 12px 22px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #a9573f;
+  background-color: #ffffff;
+  border: 1px solid #a9573f;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.secondary-button:hover {
+  background-color: #f6ebdc;
+}
+
+.secondary-button:focus {
+  outline: 3px solid #3a322c;
+  outline-offset: 2px;
+}
+
+/* 확인 화면: 입력한 내용과 수정 버튼 */
+.summary-list {
+  margin: 0 0 16px;
+  background-color: #ffffff;
+  border: 1px solid #efe6d8;
+  border-radius: 12px;
+}
+
+.summary-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #efe6d8;
+}
+
+.summary-row:last-child {
+  border-bottom: 0;
+}
+
+.summary-row dt {
+  flex-shrink: 0;
+  width: 120px;
+  font-weight: 700;
+  color: #6f655c;
+}
+
+.summary-row dd {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.edit-button {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a9573f;
+  background-color: #fbf4ea;
+  border: 1px solid #d9c6ae;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  border-color: #a9573f;
+}
+
+.edit-button:focus {
+  outline: 3px solid #a9573f;
+  outline-offset: 2px;
+}
+
+#stepConfirm .agree-row {
+  margin-bottom: 12px;
+}
+
+/* 완료 화면 */
+.request-done {
+  background-color: #e7f7ed;
+  border-color: #bfe3cc;
+}
+
+.request-done h3 {
+  color: #245c3a;
 }
 
 /* 6주차: 라벨 오른쪽에 글자 수 */
@@ -548,7 +835,9 @@ main,
   cursor: pointer;
 }
 
-.request-form input[type="text"] {
+.request-step input[type="text"],
+.request-step select,
+.request-step textarea {
   padding: 12px 14px;
   font-family: inherit;
   font-size: 16px;
@@ -559,11 +848,15 @@ main,
   transition: border-color 0.2s;
 }
 
-.request-form input[type="text"]:hover {
+.request-step input[type="text"]:hover,
+.request-step select:hover,
+.request-step textarea:hover {
   border-color: #a9573f;
 }
 
-.request-form input[type="text"]:focus {
+.request-step input[type="text"]:focus,
+.request-step select:focus,
+.request-step textarea:focus {
   border-color: #a9573f;
   outline: 3px solid #a9573f;
   outline-offset: 2px;
@@ -605,12 +898,6 @@ main,
   transform: none;
 }
 
-/* 요청이 끝난 버튼: 다시 누를 수 없음을 초록색으로 보여 준다 */
-.primary-button.is-done:disabled,
-.primary-button.is-done:disabled:hover {
-  background-color: #7a9a6b;
-}
-
 /* 5주차: 제출 결과 문구 — 처음엔 차분한 안내, 결과에 따라 색이 바뀐다 */
 .request-section .request-message {
   padding: 12px 16px;
@@ -640,14 +927,8 @@ main,
   border-color: #e3b7a5;
 }
 
-.request-section .request-message.is-success {
-  color: #245c3a;
-  background-color: #e7f7ed;
-  border-color: #bfe3cc;
-}
-
 /* 입력이 잘못됐을 때 입력칸 테두리도 빨갛게 */
-.request-form input[aria-invalid="true"] {
+.request-step [aria-invalid="true"] {
   border-color: #c0392b;
 }
 
@@ -775,9 +1056,37 @@ main,
     font-size: 22px;
   }
 
-  /* 입력창·체크박스·버튼을 세로로 배치 */
-  .request-form {
-    grid-template-columns: 1fr;
+  /* 7주차 흐름: 단계 표시는 번호만 크게, 버튼은 세로로(다음 버튼이 위) */
+  .flow-step {
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 4px;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 14px;
+  }
+
+  .request-step {
+    padding: 16px;
+  }
+
+  .step-buttons {
+    flex-direction: column-reverse;
+  }
+
+  .secondary-button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .summary-row {
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+
+  .summary-row dt {
+    width: auto;
   }
 
   .primary-button {
