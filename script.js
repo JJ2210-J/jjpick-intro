@@ -194,6 +194,7 @@ function showItemResult(result) {
   } else {
     // 이미 요청한 제품이면: 내 요청 목록의 그 요청을 강조한다
     itemInput.removeAttribute('aria-invalid');
+    blockedByRequestId = result.requestId;
     const requestItem = requestList.querySelector('.request-item[data-id="' + result.requestId + '"]');
     requestItem.classList.add('is-highlight');
     requestItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -204,6 +205,7 @@ function resetItemMessage() {
   requestMessage.textContent = defaultItemMessage;
   requestMessage.classList.remove('is-error', 'is-info');
   itemInput.removeAttribute('aria-invalid');
+  blockedByRequestId = null;
   clearHighlight();
 }
 
@@ -304,9 +306,19 @@ stepOption.addEventListener('submit', function (event) {
 
 // ----- 3단계: 확인 -----
 
+// ③ 안내 문구에 지난 오류가 남아 있으면 체크 상태에 맞는 문구로 되돌린다
+function clearAgreeError() {
+  if (agreeMessage.classList.contains('is-error')) {
+    agreeMessage.classList.remove('is-error');
+    agreeMessage.textContent = agreeCheck.checked ? '이제 요청을 보낼 수 있어요.' : defaultAgreeMessage;
+    agreeMessage.classList.toggle('is-ready', agreeCheck.checked);
+  }
+}
+
 // 확인 화면은 들어올 때마다 지금 입력값으로 다시 채운다(수정한 값도 바로 반영)
 function showSummary() {
   const memo = memoInput.value.trim();
+  clearAgreeError();
   document.querySelector('#summaryItem').textContent = itemInput.value.trim();
   document.querySelector('#summaryCategory').textContent = getCategory();
   document.querySelector('#summaryBudget').textContent = budgetSelect.value;
@@ -318,6 +330,7 @@ agreeCheck.addEventListener('change', function () {
   const agreed = agreeCheck.checked;
   sendButton.disabled = !agreed;
 
+  agreeMessage.classList.remove('is-error');
   if (agreed) {
     agreeMessage.textContent = '이제 요청을 보낼 수 있어요.';
     agreeMessage.classList.add('is-ready');
@@ -330,6 +343,18 @@ agreeCheck.addEventListener('change', function () {
 stepConfirm.addEventListener('submit', function (event) {
   event.preventDefault();
   if (agreeCheck.checked === false) {
+    return;
+  }
+
+  const sameRequest = findWaitingRequest(itemInput.value.trim());
+  if (sameRequest !== null) {
+    agreeMessage.textContent = '그사이 같은 제품(' + sameRequest.item + ')의 요청이 검토 대기 중이 되어 보낼 수 없어요. 아래 내 요청 목록에 표시한 요청을 취소하거나, 제품을 "수정"해 주세요.';
+    agreeMessage.classList.remove('is-ready');
+    agreeMessage.classList.add('is-error');
+    clearHighlight();
+    const requestItem = requestList.querySelector('.request-item[data-id="' + sameRequest.id + '"]');
+    requestItem.classList.add('is-highlight');
+    requestItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
@@ -351,7 +376,7 @@ function resetRequest() {
   showBudgetError('');
 
   agreeMessage.textContent = defaultAgreeMessage;
-  agreeMessage.classList.remove('is-ready');
+  agreeMessage.classList.remove('is-ready', 'is-error');
   sendButton.disabled = true;
 
   showSummary();
@@ -378,6 +403,7 @@ const cancelText = document.querySelector('#cancelText');
 const myRequests = [];
 let nextRequestId = 1;
 let cancelTargetId = null;   // 확인 창이 열려 있는 동안 취소하려는 요청의 번호
+let blockedByRequestId = null;   // ①단계 문구가 "이미 요청한 제품"으로 막고 있는 요청의 번호
 
 const statusText = { waiting: '검토 대기', cancelled: '취소됨' };
 
@@ -474,7 +500,12 @@ function createRequestItem(request) {
 }
 
 // 배열 내용대로 목록·건수·빈 목록 안내를 다시 그린다
+// 목록이 바뀌면(취소·다시 요청) "이미 요청한 제품" 같은 지난 안내는 더 이상 맞지 않을 수 있으니 되돌린다
 function renderRequests() {
+  if (blockedByRequestId !== null) {
+    resetItemMessage();
+  }
+  clearAgreeError();
   requestList.textContent = '';
   let waitingCount = 0;
 
