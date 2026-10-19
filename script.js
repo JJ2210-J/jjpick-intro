@@ -153,12 +153,25 @@ function checkItem(itemName) {
     };
   }
 
+  // 중간고사: 내가 이미 보낸 요청(검토 대기)과 같은 제품이면 목록에서 확인하게 한다
+  const sameRequest = findWaitingRequest(itemName);
+  if (sameRequest !== null) {
+    return {
+      type: 'info',
+      text: '이미 요청한 제품이에요 — ' + sameRequest.item + '(검토 대기). 아래 내 요청 목록에 표시해 두었어요. 다른 제품을 입력하면 다음 단계로 갈 수 있어요.',
+      requestId: sameRequest.id
+    };
+  }
+
   return { type: 'ok' };
 }
 
 function clearHighlight() {
   cards.forEach(function (card) {
     card.classList.remove('is-highlight');
+  });
+  document.querySelectorAll('.request-item.is-highlight').forEach(function (item) {
+    item.classList.remove('is-highlight');
   });
 }
 
@@ -172,12 +185,18 @@ function showItemResult(result) {
   if (result.type === 'error') {
     itemInput.setAttribute('aria-invalid', 'true');
     itemInput.focus();
-  } else {
+  } else if (result.card) {
     // 이미 있는 상품이면: 판매처 필터를 '전체'로 돌리고 그 카드만 강조해서 보여 준다
     itemInput.removeAttribute('aria-invalid');
     chips[0].click();
     result.card.classList.add('is-highlight');
     result.card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    // 이미 요청한 제품이면: 내 요청 목록의 그 요청을 강조한다
+    itemInput.removeAttribute('aria-invalid');
+    const requestItem = requestList.querySelector('.request-item[data-id="' + result.requestId + '"]');
+    requestItem.classList.add('is-highlight');
+    requestItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
@@ -314,8 +333,9 @@ stepConfirm.addEventListener('submit', function (event) {
     return;
   }
 
+  addRequest();
   doneMessage.textContent = '"' + itemInput.value.trim() + '"(' + getCategory() + ' · ' + budgetSelect.value +
-    ') 추천 요청을 받았어요. 직접 써 본 영상이 올라오면 추천 모음에 추가할게요.';
+    ') 추천 요청을 받았어요. 내 요청 목록에 추가했으니, 직접 써 본 영상이 올라오기 전까지 언제든 취소할 수 있어요.';
   goToStep(4);
 });
 
@@ -342,6 +362,219 @@ document.querySelector('#requestRestart').addEventListener('click', function () 
   resetRequest();
   goToStep(1);
 });
+
+// ===== 중간고사: 내 요청 목록 (요청 완료 → 목록 추가 → 취소 / 다시 요청) =====
+
+const myRequestsBox = document.querySelector('#myRequests');
+const requestList = document.querySelector('#requestList');
+const requestCount = document.querySelector('#requestCount');
+const listMessage = document.querySelector('#listMessage');
+const defaultListMessage = listMessage.textContent;
+const emptyRequests = document.querySelector('#emptyRequests');
+const cancelDialog = document.querySelector('#cancelDialog');
+const cancelText = document.querySelector('#cancelText');
+
+// 보낸 요청을 담는 배열 — 새로 고침하면 비워진다(서버 없이 브라우저에서만 동작하는 프로토타입)
+const myRequests = [];
+let nextRequestId = 1;
+let cancelTargetId = null;   // 확인 창이 열려 있는 동안 취소하려는 요청의 번호
+
+const statusText = { waiting: '검토 대기', cancelled: '취소됨' };
+
+function findRequest(id) {
+  for (let i = 0; i < myRequests.length; i++) {
+    if (myRequests[i].id === id) {
+      return myRequests[i];
+    }
+  }
+  return null;
+}
+
+// 같은 제품의 검토 대기 요청을 찾는다 — 없으면 null (띄어쓰기·대소문자는 무시)
+function findWaitingRequest(itemName) {
+  const keyword = normalize(itemName);
+  for (let i = 0; i < myRequests.length; i++) {
+    if (myRequests[i].status === 'waiting' && normalize(myRequests[i].item) === keyword) {
+      return myRequests[i];
+    }
+  }
+  return null;
+}
+
+// 확인 화면에서 요청을 보내면 지금 입력값으로 목록에 하나 추가한다
+function addRequest() {
+  const now = new Date();
+  myRequests.push({
+    id: nextRequestId,
+    item: itemInput.value.trim(),
+    category: getCategory(),
+    budget: budgetSelect.value,
+    memo: memoInput.value.trim(),
+    time: now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+    status: 'waiting'
+  });
+  nextRequestId = nextRequestId + 1;
+  renderRequests();
+  showListMessage('"' + itemInput.value.trim() + '" 요청을 목록에 추가했어요.', 'is-ready');
+}
+
+function showListMessage(text, type) {
+  listMessage.textContent = text;
+  listMessage.classList.remove('is-ready', 'is-error', 'is-info');
+  if (type) {
+    listMessage.classList.add(type);
+  }
+}
+
+// 요청 하나를 목록의 li 로 만든다
+function createRequestItem(request) {
+  const li = document.createElement('li');
+  li.className = 'request-item';
+  li.dataset.id = request.id;
+  if (request.status === 'cancelled') {
+    li.classList.add('is-cancelled');
+  }
+
+  const head = document.createElement('div');
+  head.className = 'request-item-head';
+  const name = document.createElement('h4');
+  name.textContent = request.item;
+  const badge = document.createElement('span');
+  badge.className = 'status-badge is-' + request.status;
+  badge.textContent = statusText[request.status];
+  head.append(name, badge);
+
+  const meta = document.createElement('p');
+  meta.className = 'request-meta';
+  meta.textContent = request.category + ' · ' + request.budget + ' · ' + request.time + ' 요청';
+
+  li.append(head, meta);
+
+  if (request.memo !== '') {
+    const memo = document.createElement('p');
+    memo.className = 'request-memo';
+    memo.textContent = '메모: ' + request.memo;
+    li.append(memo);
+  }
+
+  // 상태에 따라 할 수 있는 행동이 바뀐다: 검토 대기 → 취소, 취소됨 → 다시 요청
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.dataset.id = request.id;
+  button.className = 'edit-button';
+  if (request.status === 'waiting') {
+    button.dataset.action = 'cancel';
+    button.textContent = '요청 취소';
+  } else {
+    button.dataset.action = 'restore';
+    button.textContent = '다시 요청하기';
+  }
+  li.append(button);
+  return li;
+}
+
+// 배열 내용대로 목록·건수·빈 목록 안내를 다시 그린다
+function renderRequests() {
+  requestList.textContent = '';
+  let waitingCount = 0;
+
+  myRequests.forEach(function (request) {
+    requestList.append(createRequestItem(request));
+    if (request.status === 'waiting') {
+      waitingCount = waitingCount + 1;
+    }
+  });
+
+  const cancelledCount = myRequests.length - waitingCount;
+  if (myRequests.length === 0) {
+    requestCount.textContent = '0건';
+  } else {
+    requestCount.textContent = '검토 대기 ' + waitingCount + '건 · 취소 ' + cancelledCount + '건';
+  }
+
+  requestList.hidden = myRequests.length === 0;
+  emptyRequests.hidden = myRequests.length !== 0;
+}
+
+// 목록 안의 버튼은 하나의 click 이벤트에서 data-action 으로 나눠 처리한다
+requestList.addEventListener('click', function (event) {
+  const button = event.target.closest('button[data-action]');
+  if (button === null) {
+    return;
+  }
+  const request = findRequest(Number(button.dataset.id));
+
+  if (button.dataset.action === 'cancel') {
+    cancelTargetId = request.id;
+    cancelText.textContent = '"' + request.item + '"(' + request.category + ' · ' + request.budget +
+      ') 요청을 취소하면 추천 영상 준비가 멈춰요. 취소한 뒤에도 목록에서 다시 요청할 수 있어요.';
+    cancelDialog.showModal();
+    return;
+  }
+
+  // 다시 요청하기: 같은 제품이 이미 검토 대기 중이면 되살리지 않는다
+  const waitingRequest = findWaitingRequest(request.item);
+  if (waitingRequest !== null) {
+    clearHighlight();
+    requestList.querySelector('.request-item[data-id="' + waitingRequest.id + '"]').classList.add('is-highlight');
+    showListMessage('같은 제품("' + request.item + '")의 요청이 이미 검토 대기 중이라 다시 요청할 수 없어요. 표시한 요청을 확인해 주세요.', 'is-error');
+    return;
+  }
+  request.status = 'waiting';
+  renderRequests();
+  showListMessage('"' + request.item + '" 요청을 다시 보냈어요. 상태가 검토 대기로 바뀌었어요.', 'is-ready');
+  focusRequestButton(request.id);
+});
+
+function focusRequestButton(id) {
+  requestList.querySelector('button[data-id="' + id + '"]').focus();
+}
+
+// 확인 창: 그대로 두기 → 아무것도 바꾸지 않음
+document.querySelector('#cancelKeep').addEventListener('click', function () {
+  cancelDialog.close();
+});
+
+// Esc 로 닫거나 그대로 두기를 누르면 원래 버튼으로 커서를 돌려준다
+cancelDialog.addEventListener('close', function () {
+  if (cancelTargetId !== null) {
+    showListMessage('취소하지 않았어요. 요청은 그대로 검토 대기예요.', 'is-info');
+    focusRequestButton(cancelTargetId);
+    cancelTargetId = null;
+  }
+});
+
+// 확인 창: 요청 취소하기 → 상태를 취소됨으로 바꾼다
+document.querySelector('#cancelConfirm').addEventListener('click', function () {
+  const request = findRequest(cancelTargetId);
+  request.status = 'cancelled';
+  cancelTargetId = null;
+  cancelDialog.close();
+  renderRequests();
+  showListMessage('"' + request.item + '" 요청을 취소했어요. 마음이 바뀌면 "다시 요청하기"를 눌러 주세요.', 'is-info');
+  focusRequestButton(request.id);
+});
+
+// 완료 화면의 "내 요청 목록 보기"
+document.querySelector('#showMyRequests').addEventListener('click', function () {
+  myRequestsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  myRequestsBox.focus({ preventScroll: true });
+});
+
+// 목록이 비었을 때 "첫 추천 요청 하기": 흐름을 시작하거나, 이미 진행 중이면 그 단계로 커서를 옮긴다
+document.querySelector('#emptyStart').addEventListener('click', function () {
+  if (requestIntro.hidden === false) {
+    document.querySelector('#requestStart').click();
+    return;
+  }
+  for (let i = 0; i < requestSteps.length; i++) {
+    if (requestSteps[i].hidden === false) {
+      focusStep(Number(requestSteps[i].dataset.step));
+    }
+  }
+});
+
+renderRequests();
 
 // ===== 6주차: 찜하기와 주요 기능 탭 =====
 
