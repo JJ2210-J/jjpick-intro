@@ -812,8 +812,92 @@ main,
   color: #8a7d72;
 }
 
+/* 9주차: 조건을 채우면 초록, 거의 다 찼으면 주황 — 문구도 함께 바뀐다 */
+.item-count.is-valid {
+  color: #2f7a4b;
+}
+
 .item-count.is-near-limit {
-  color: #b0341f;
+  color: #a35a12;
+}
+
+/* 9주차: 입력 조건 도움말 */
+.request-section .field-help {
+  margin: 2px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: #7a6e64;
+}
+
+/* 9주차: "써 본 제품" 체크 영역과 조건부 입력 영역 */
+.used-toggle {
+  margin-bottom: 12px;
+}
+
+.used-toggle .agree-row {
+  font-weight: 700;
+  color: #3a322c;
+}
+
+.conditional-field {
+  margin: 0 0 14px;
+  padding: 14px 16px 2px;
+  background-color: #ffffff;
+  border: 1px solid #e3cfc0;
+  border-left: 4px solid #c96e54;
+  border-radius: 12px;
+}
+
+.conditional-field[hidden] {
+  display: none;
+}
+
+/* 9주차: 제출 중·실패 안내 */
+.request-section .send-status {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.request-section .send-status:empty {
+  display: none;
+}
+
+.request-section .send-status.is-loading {
+  color: #6b5e54;
+}
+
+.request-section .send-status.is-loading::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  border: 2px solid #d9c6ae;
+  border-top-color: #a9573f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.request-section .send-status.is-error {
+  padding: 10px 14px;
+  color: #9b2c2c;
+  background-color: #fdecec;
+  border: 1px solid #f3c7c7;
+  border-radius: 12px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-section .send-status.is-loading::before {
+    animation: none;
+  }
 }
 
 /* 6주차: 안내 확인 체크박스 */
@@ -1252,6 +1336,13 @@ main,
 
   .summary-row dt {
     width: auto;
+  }
+
+  /* 9주차: 좁은 화면에서는 글자 수 표시를 라벨 아래로 */
+  .item-label-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 
   /* 내 요청 목록: 한 열, 버튼은 가로 가득 */
