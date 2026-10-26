@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="JJ픽은 주방·가전·리빙 살림 꿀템을 짧은 영상으로 소개하고, 영상에 나온 제품을 한 페이지에 모아 보여 주는 추천 서비스입니다.">
   <title>JJ픽 | 서비스 소개</title>
-  <link rel="stylesheet" href="style.css?v=20261019">
+  <link rel="stylesheet" href="style.css?v=20261026">
 </head>
 <body>
   <!--
@@ -23,6 +23,10 @@
     중간고사: 내 요청 목록(흐름의 끝에 이어지는 새 사용 경로)
     목표: 보낸 요청을 다시 확인하고, 마음이 바뀌면 취소하거나 다시 요청한다
     흐름: 요청 완료 → 내 요청 목록에 추가 → 요청 취소(확인 창) / 다시 요청하기
+
+    9주차: 추천 요청 폼 개선
+    목표: 무엇을 입력해야 하는지 알고, 잘못 입력해도 고쳐서 요청을 끝까지 보낸다
+    추가: 입력 도움말 · 입력 중 조건 표시 · "써 본 제품" 조건부 입력 · 제출 중/성공/실패 처리 · 브라우저 저장
   -->
   <!-- 서비스 이름과 한 줄 소개 -->
   <header id="top" class="site-header">
@@ -243,9 +247,12 @@
           <div class="item-field">
             <div class="item-label-row">
               <label for="item">고민 중인 제품 <span class="required">(필수)</span></label>
-              <span id="itemCount" class="item-count">0 / 20</span>
+              <span id="itemCount" class="item-count" aria-live="polite">0 / 20자 · 2자 이상 필요</span>
             </div>
-            <input type="text" id="item" name="item" maxlength="20" placeholder="예: 전기포트" aria-describedby="requestMessage">
+            <input type="text" id="item" name="item" required minlength="2" maxlength="20" placeholder="예: 전기포트"
+                   aria-describedby="itemHelp itemCount requestMessage">
+            <!-- 9주차: 입력 조건 도움말 -->
+            <p id="itemHelp" class="field-help">2~20자로 적어 주세요. 이미 추천 모음에 있거나 내가 요청한 제품은 다음으로 넘어가지 않아요.</p>
           </div>
           <p id="requestMessage" class="request-message" aria-live="polite">고민 중인 제품 이름을 입력하고 "다음"을 눌러 주세요.</p>
           <div class="step-buttons">
@@ -266,19 +273,44 @@
 
           <div class="option-field">
             <label for="budget">예산 <span class="required">(필수)</span></label>
-            <select id="budget" name="budget" aria-describedby="budgetError">
+            <select id="budget" name="budget" required aria-describedby="budgetHelp budgetError">
               <option value="">예산을 골라 주세요</option>
               <option value="3만 원 이하">3만 원 이하</option>
               <option value="3만~10만 원">3만~10만 원</option>
               <option value="10만 원 이상">10만 원 이상</option>
               <option value="상관없음">상관없음</option>
             </select>
+            <p id="budgetHelp" class="field-help">정해 둔 예산이 없으면 "상관없음"을 골라 주세요.</p>
           </div>
           <p id="budgetError" class="field-error" aria-live="polite"></p>
 
+          <!-- 9주차: 조건부 입력 — 체크하면 아래 영역이 나타나고 입력할 수 있다 -->
+          <div class="used-toggle">
+            <label class="agree-row" for="usedBefore">
+              <input type="checkbox" id="usedBefore" name="usedBefore" aria-controls="usedDetail" aria-expanded="false" aria-describedby="usedBeforeHelp">
+              써 본 비슷한 제품이 있어요
+            </label>
+            <p id="usedBeforeHelp" class="field-help">체크하면 써 본 제품과 아쉬웠던 점을 적는 칸이 열려요. 영상에서 그 제품과 비교해 드려요.</p>
+          </div>
+          <div id="usedDetail" class="conditional-field" hidden>
+            <div class="option-field">
+              <div class="item-label-row">
+                <label for="usedNote">써 본 제품과 아쉬웠던 점 <span class="required">(필수)</span></label>
+                <span id="usedCount" class="item-count" aria-live="polite">0 / 100자 · 10자 이상 필요</span>
+              </div>
+              <textarea id="usedNote" name="usedNote" required minlength="10" maxlength="100" rows="3" disabled
+                        placeholder="예: OO 전기포트를 썼는데 뚜껑에 물때가 잘 껴요"
+                        aria-describedby="usedNoteHelp usedCount usedError"></textarea>
+              <p id="usedNoteHelp" class="field-help">어떤 제품을 써 봤고 무엇이 아쉬웠는지 10~100자로 적어 주세요.</p>
+            </div>
+            <p id="usedError" class="field-error" role="alert"></p>
+          </div>
+
           <div class="option-field">
             <label for="memo">더 알려 주실 점 <span class="optional">(선택)</span></label>
-            <textarea id="memo" name="memo" maxlength="60" rows="3" placeholder="예: 1인 가구라 작은 크기면 좋겠어요"></textarea>
+            <textarea id="memo" name="memo" maxlength="60" rows="3" placeholder="예: 1인 가구라 작은 크기면 좋겠어요"
+                      aria-describedby="memoHelp"></textarea>
+            <p id="memoHelp" class="field-help">적지 않아도 돼요. 60자까지 적을 수 있어요.</p>
           </div>
           <div class="step-buttons">
             <button class="secondary-button" type="button" data-go="1">이전</button>
@@ -303,6 +335,10 @@
               <dd><span id="summaryBudget"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
             </div>
             <div class="summary-row">
+              <dt>써 본 제품</dt>
+              <dd><span id="summaryUsed"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
+            </div>
+            <div class="summary-row">
               <dt>더 알려 주실 점</dt>
               <dd><span id="summaryMemo"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
             </div>
@@ -316,6 +352,8 @@
             <button class="secondary-button" type="button" data-go="2">이전</button>
             <button id="sendButton" class="primary-button" type="submit" disabled>추천 요청 보내기</button>
           </div>
+          <!-- 9주차: 제출 중·실패 안내 -->
+          <p id="sendStatus" class="send-status" role="status" aria-live="polite"></p>
         </form>
 
         <!-- 완료 -->
@@ -364,6 +402,6 @@
   </footer>
 
   <!-- HTML 요소가 모두 만들어진 뒤 JavaScript를 실행하도록 body 끝에서 불러온다 -->
-  <script src="script.js?v=20261019"></script>
+  <script src="script.js?v=20261026"></script>
 </body>
 </html>
