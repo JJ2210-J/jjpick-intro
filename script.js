@@ -55,6 +55,20 @@ const agreeMessage = document.querySelector('#agreeMessage');
 const defaultAgreeMessage = agreeMessage.textContent;
 const sendButton = document.querySelector('#sendButton');
 
+// 9주차: 써 본 제품(조건부 입력)
+const usedBefore = document.querySelector('#usedBefore');
+const usedDetail = document.querySelector('#usedDetail');
+const usedNote = document.querySelector('#usedNote');
+const usedCount = document.querySelector('#usedCount');
+const usedError = document.querySelector('#usedError');
+const USED_MIN = Number(usedNote.getAttribute('minlength'));
+const USED_MAX = usedNote.maxLength;
+
+// 9주차: 제출 상태
+const sendStatus = document.querySelector('#sendStatus');
+const defaultSendText = sendButton.textContent;
+let isSubmitting = false;   // 보내는 중이면 true — 중복 제출을 막는다
+
 // 완료
 const doneMessage = document.querySelector('#doneMessage');
 
@@ -221,19 +235,31 @@ stepItem.addEventListener('submit', function (event) {
   goToStep(2);
 });
 
-// 입력할 때마다 글자 수를 보여 주고, 15자를 넘으면 빨간색으로 알린다(6주차)
+// 입력할 때마다 글자 수와 조건 충족 여부를 보여 준다(6주차 글자 수 + 9주차 조건 문구)
+// 상태를 색만이 아니라 "2자 이상 필요 / 조건 충족" 문구로도 알린다.
 function updateItemCount() {
   const currentLength = itemInput.value.length;
-  itemCount.textContent = currentLength + ' / ' + maxLength;
-
-  if (currentLength >= 15) {
-    itemCount.classList.add('is-near-limit');
-  } else {
-    itemCount.classList.remove('is-near-limit');
+  const ok = itemInput.value.trim().length >= 2;
+  let state = ok ? '조건 충족' : '2자 이상 필요';
+  if (ok && currentLength >= 15) {
+    state = '조건 충족 · 최대 ' + maxLength + '자';
   }
+  itemCount.textContent = currentLength + ' / ' + maxLength + '자 · ' + state;
+  itemCount.classList.toggle('is-valid', ok);
+  itemCount.classList.toggle('is-near-limit', currentLength >= 15);
 }
 
-itemInput.addEventListener('input', updateItemCount);
+itemInput.addEventListener('input', function () {
+  updateItemCount();
+
+  // 9주차: 오류가 떠 있는 상태에서 조건에 맞게 고치면 오류를 바로 해제한다
+  if (requestMessage.classList.contains('is-error') && itemInput.value.trim().length >= 2) {
+    resetItemMessage();
+  } else if (requestMessage.classList.contains('is-info')) {
+    // "이미 있는/요청한 제품" 안내는 입력이 바뀌면 더 이상 맞지 않으므로 처음 문구로 돌린다
+    resetItemMessage();
+  }
+});
 
 // ----- 2단계: 조건 선택 -----
 
@@ -274,6 +300,47 @@ budgetSelect.addEventListener('change', function () {
   }
 });
 
+// 9주차: "써 본 비슷한 제품이 있어요"를 체크하면 입력 영역을 보여 주고 입력할 수 있게 한다.
+// 체크를 풀면 영역을 숨기고 disabled 로 막아서 제출·검사 대상에서 빠지게 한다.
+function showUsedError(text) {
+  usedError.textContent = text;
+  if (text === '') {
+    usedNote.removeAttribute('aria-invalid');
+  } else {
+    usedNote.setAttribute('aria-invalid', 'true');
+  }
+}
+
+function setUsedDetail(open) {
+  usedDetail.hidden = !open;
+  usedNote.disabled = !open;
+  usedBefore.setAttribute('aria-expanded', String(open));
+  if (!open) {
+    showUsedError('');
+  }
+}
+
+function updateUsedCount() {
+  const currentLength = usedNote.value.length;
+  const ok = usedNote.value.trim().length >= USED_MIN;
+  usedCount.textContent = currentLength + ' / ' + USED_MAX + '자 · ' + (ok ? '조건 충족' : USED_MIN + '자 이상 필요');
+  usedCount.classList.toggle('is-valid', ok);
+
+  // 고쳐서 조건을 채우면 오류를 바로 해제한다
+  if (ok && usedError.textContent !== '') {
+    showUsedError('');
+  }
+}
+
+usedBefore.addEventListener('change', function () {
+  setUsedDetail(usedBefore.checked);
+  if (usedBefore.checked) {
+    usedNote.focus();
+  }
+});
+
+usedNote.addEventListener('input', updateUsedCount);
+
 stepOption.addEventListener('submit', function (event) {
   event.preventDefault();
   let firstMissing = null;
@@ -292,6 +359,18 @@ stepOption.addEventListener('submit', function (event) {
     }
   } else {
     showBudgetError('');
+  }
+
+  // 9주차: 써 본 제품을 체크했다면 내용을 USED_MIN 자 이상 적어야 한다
+  const usedLength = usedNote.value.trim().length;
+  if (usedBefore.checked && usedLength < USED_MIN) {
+    showUsedError('써 본 제품과 아쉬웠던 점을 ' + USED_MIN + '자 이상 적어 주세요. (지금 ' + usedLength +
+      '자) 적기 어렵다면 위 체크를 풀어도 돼요.');
+    if (firstMissing === null) {
+      firstMissing = usedNote;
+    }
+  } else {
+    showUsedError('');
   }
 
   // 빠진 항목이 있으면 다음 단계로 넘어가지 않고 첫 번째 빠진 곳으로 커서를 옮긴다
@@ -319,10 +398,48 @@ function clearAgreeError() {
 function showSummary() {
   const memo = memoInput.value.trim();
   clearAgreeError();
+  if (!isSubmitting) {
+    setSubmitState('idle');
+  }
   document.querySelector('#summaryItem').textContent = itemInput.value.trim();
   document.querySelector('#summaryCategory').textContent = getCategory();
   document.querySelector('#summaryBudget').textContent = budgetSelect.value;
+  document.querySelector('#summaryUsed').textContent = getUsedNote() === '' ? '없음' : getUsedNote();
   document.querySelector('#summaryMemo').textContent = memo === '' ? '없음' : memo;
+}
+
+// 체크했을 때만 써 본 제품 내용을 쓴다(체크를 풀면 숨겨진 칸의 값은 보내지 않는다)
+function getUsedNote() {
+  return usedBefore.checked ? usedNote.value.trim() : '';
+}
+
+// 9주차: 제출 상태를 한곳에서 바꾼다 — idle(평소) / loading(보내는 중) / error(실패, 다시 시도)
+function setSubmitState(state) {
+  isSubmitting = state === 'loading';
+  stepConfirm.setAttribute('aria-busy', String(isSubmitting));
+
+  // 보내는 중에는 이전·수정 버튼과 체크박스도 잠가서 화면이 바뀌지 않게 한다
+  stepConfirm.querySelectorAll('button[data-go]').forEach(function (button) {
+    button.disabled = isSubmitting;
+  });
+  agreeCheck.disabled = isSubmitting;
+
+  sendStatus.classList.remove('is-loading', 'is-error');
+  if (state === 'loading') {
+    sendButton.disabled = true;
+    sendButton.textContent = '보내는 중…';
+    sendStatus.textContent = '요청을 보내는 중이에요. 잠시만 기다려 주세요.';
+    sendStatus.classList.add('is-loading');
+  } else if (state === 'error') {
+    sendButton.disabled = !agreeCheck.checked;
+    sendButton.textContent = '다시 보내기';
+    sendStatus.textContent = '요청을 저장하지 못했어요. 입력한 내용은 그대로 있어요. 잠시 뒤 "다시 보내기"를 눌러 주세요.';
+    sendStatus.classList.add('is-error');
+  } else {
+    sendButton.disabled = !agreeCheck.checked;
+    sendButton.textContent = defaultSendText;
+    sendStatus.textContent = '';
+  }
 }
 
 // 안내 확인에 체크해야 요청 버튼이 켜진다(6주차)
@@ -342,7 +459,15 @@ agreeCheck.addEventListener('change', function () {
 
 stepConfirm.addEventListener('submit', function (event) {
   event.preventDefault();
+
+  // 9주차: 이미 보내는 중이면 다시 보내지 않는다(중복 제출 방지)
+  if (isSubmitting) {
+    return;
+  }
   if (agreeCheck.checked === false) {
+    agreeMessage.textContent = '안내 확인에 체크해야 요청을 보낼 수 있어요.';
+    agreeMessage.classList.add('is-error');
+    agreeCheck.focus();
     return;
   }
 
@@ -358,10 +483,25 @@ stepConfirm.addEventListener('submit', function (event) {
     return;
   }
 
-  addRequest();
-  doneMessage.textContent = '"' + itemInput.value.trim() + '"(' + getCategory() + ' · ' + budgetSelect.value +
-    ') 추천 요청을 받았어요. 내 요청 목록에 추가했으니, 직접 써 본 영상이 올라오기 전까지 언제든 취소할 수 있어요.';
-  goToStep(4);
+  // 9주차: 보내는 중 상태를 보여 준 뒤 브라우저 저장소에 저장한다(서버 대신 localStorage)
+  setSubmitState('loading');
+
+  setTimeout(function () {
+    const saved = addRequest();
+
+    // 실패: 입력 내용은 그대로 두고 다시 시도할 수 있게 한다
+    if (!saved) {
+      setSubmitState('error');
+      sendButton.focus();
+      return;
+    }
+
+    // 성공: 완료 안내로 이동
+    setSubmitState('idle');
+    doneMessage.textContent = '"' + itemInput.value.trim() + '"(' + getCategory() + ' · ' + budgetSelect.value +
+      ') 추천 요청을 받았어요. 내 요청 목록에 저장했으니, 직접 써 본 영상이 올라오기 전까지 언제든 취소할 수 있어요.';
+    goToStep(4);
+  }, 800);
 });
 
 // ----- 다시 시작: 입력·선택·오류·진행 상태를 모두 처음으로 -----
@@ -374,9 +514,12 @@ function resetRequest() {
   resetItemMessage();
   showCategoryError('');
   showBudgetError('');
+  setUsedDetail(false);     // 9주차: 조건부 영역도 닫고 비활성화
+  updateUsedCount();
 
   agreeMessage.textContent = defaultAgreeMessage;
   agreeMessage.classList.remove('is-ready', 'is-error');
+  setSubmitState('idle');   // 9주차: 버튼 글자·상태 문구도 처음으로
   sendButton.disabled = true;
 
   showSummary();
@@ -399,9 +542,10 @@ const emptyRequests = document.querySelector('#emptyRequests');
 const cancelDialog = document.querySelector('#cancelDialog');
 const cancelText = document.querySelector('#cancelText');
 
-// 보낸 요청을 담는 배열 — 새로 고침하면 비워진다(서버 없이 브라우저에서만 동작하는 프로토타입)
+// 보낸 요청을 담는 배열 — 9주차부터 브라우저 저장소(localStorage)에 저장해서 새로 고침해도 남는다
 const myRequests = [];
 let nextRequestId = 1;
+const STORAGE_KEY = 'jjpick.myRequests.v1';
 let cancelTargetId = null;   // 확인 창이 열려 있는 동안 취소하려는 요청의 번호
 let blockedByRequestId = null;   // ①단계 문구가 "이미 요청한 제품"으로 막고 있는 요청의 번호
 
@@ -427,21 +571,74 @@ function findWaitingRequest(itemName) {
   return null;
 }
 
+// 9주차: 목록을 브라우저 저장소에 저장한다 — 저장소를 쓸 수 없으면(시크릿 창 제한·용량 초과 등) false
+function saveRequests(list, nextId) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ requests: list, nextId: nextId }));
+    return true;
+  } catch (error) {
+    console.error('Failed to save requests', error);
+    return false;
+  }
+}
+
+// 9주차: 저장해 둔 목록을 불러온다 — 모양이 맞는 항목만 받아들이고, 읽지 못하면 빈 목록으로 시작한다
+function loadRequests() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return;
+    }
+    const data = JSON.parse(raw);
+    const list = Array.isArray(data?.requests) ? data.requests : [];
+    list.forEach(function (r) {
+      const valid = r && Number.isInteger(r.id) && typeof r.item === 'string' && r.item !== '' &&
+        typeof r.category === 'string' && typeof r.budget === 'string' && typeof r.time === 'string' &&
+        Object.prototype.hasOwnProperty.call(statusText, r.status);
+      if (valid) {
+        myRequests.push({
+          id: r.id,
+          item: r.item,
+          category: r.category,
+          budget: r.budget,
+          memo: typeof r.memo === 'string' ? r.memo : '',
+          used: typeof r.used === 'string' ? r.used : '',
+          time: r.time,
+          status: r.status
+        });
+      }
+    });
+    const maxId = myRequests.reduce(function (max, r) { return Math.max(max, r.id); }, 0);
+    nextRequestId = Math.max(Number.isInteger(data?.nextId) ? data.nextId : 1, maxId + 1);
+  } catch (error) {
+    console.error('Failed to load saved requests', error);
+  }
+}
+
 // 확인 화면에서 요청을 보내면 지금 입력값으로 목록에 하나 추가한다
+// 9주차: 먼저 저장해 보고, 저장에 성공했을 때만 목록에 반영한다 — 성공하면 true, 실패하면 false
 function addRequest() {
   const now = new Date();
-  myRequests.push({
+  const request = {
     id: nextRequestId,
     item: itemInput.value.trim(),
     category: getCategory(),
     budget: budgetSelect.value,
     memo: memoInput.value.trim(),
+    used: getUsedNote(),
     time: now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
     status: 'waiting'
-  });
+  };
+
+  if (!saveRequests(myRequests.concat([request]), nextRequestId + 1)) {
+    return false;
+  }
+
+  myRequests.push(request);
   nextRequestId = nextRequestId + 1;
   renderRequests();
-  showListMessage('"' + itemInput.value.trim() + '" 요청을 목록에 추가했어요.', 'is-ready');
+  showListMessage('"' + request.item + '" 요청을 목록에 추가했어요.', 'is-ready');
+  return true;
 }
 
 function showListMessage(text, type) {
@@ -475,6 +672,13 @@ function createRequestItem(request) {
   meta.textContent = request.category + ' · ' + request.budget + ' · ' + request.time + ' 요청';
 
   li.append(head, meta);
+
+  if (request.used) {
+    const used = document.createElement('p');
+    used.className = 'request-memo';
+    used.textContent = '써 본 제품: ' + request.used;
+    li.append(used);
+  }
 
   if (request.memo !== '') {
     const memo = document.createElement('p');
@@ -552,6 +756,11 @@ requestList.addEventListener('click', function (event) {
     return;
   }
   request.status = 'waiting';
+  if (!saveRequests(myRequests, nextRequestId)) {
+    request.status = 'cancelled';
+    showListMessage('저장하지 못해서 다시 요청되지 않았어요. 잠시 뒤 다시 눌러 주세요.', 'is-error');
+    return;
+  }
   renderRequests();
   showListMessage('"' + request.item + '" 요청을 다시 보냈어요. 상태가 검토 대기로 바뀌었어요.', 'is-ready');
   focusRequestButton(request.id);
@@ -581,6 +790,12 @@ document.querySelector('#cancelConfirm').addEventListener('click', function () {
   request.status = 'cancelled';
   cancelTargetId = null;
   cancelDialog.close();
+  if (!saveRequests(myRequests, nextRequestId)) {
+    request.status = 'waiting';
+    showListMessage('저장하지 못해서 취소되지 않았어요. 요청은 그대로 검토 대기예요. 잠시 뒤 다시 시도해 주세요.', 'is-error');
+    focusRequestButton(request.id);
+    return;
+  }
   renderRequests();
   showListMessage('"' + request.item + '" 요청을 취소했어요. 마음이 바뀌면 "다시 요청하기"를 눌러 주세요.', 'is-info');
   focusRequestButton(request.id);
@@ -605,7 +820,10 @@ document.querySelector('#emptyStart').addEventListener('click', function () {
   }
 });
 
+loadRequests();
 renderRequests();
+updateItemCount();
+updateUsedCount();
 
 // ===== 6주차: 찜하기와 주요 기능 탭 =====
 
