@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="JJ픽은 주방·가전·리빙 살림 꿀템을 짧은 영상으로 소개하고, 영상에 나온 제품을 한 페이지에 모아 보여 주는 추천 서비스입니다.">
   <title>JJ픽 | 서비스 소개</title>
-  <link rel="stylesheet" href="style.css?v=20261026">
+  <link rel="stylesheet" href="style.css?v=20261102">
 </head>
 <body>
   <!--
@@ -27,25 +27,30 @@
     9주차: 추천 요청 폼 개선
     목표: 무엇을 입력해야 하는지 알고, 잘못 입력해도 고쳐서 요청을 끝까지 보낸다
     추가: 입력 도움말 · 입력 중 조건 표시 · "써 본 제품" 조건부 입력 · 제출 중/성공/실패 처리 · 브라우저 저장
+
+    10주차: 메뉴 이동과 목록 탐색
+    목표: 지금 어디를 보고 있는지 알고, 원하는 요청만 골라 보고, 휴대폰에서도 메뉴로 바로 이동한다
+    추가: 화면 위 고정 메뉴 · 현재 위치 표시(aria-current) · 모바일 메뉴 열기/닫기 · 내 요청 상태 필터 · 결과 수와 빈 결과 안내
   -->
   <!-- 서비스 이름과 한 줄 소개 -->
   <header id="top" class="site-header">
     <span class="brand-mark" aria-hidden="true">JJ</span>
     <h1>JJ픽</h1>
     <p class="header-description">짧은 영상으로 확인하고, 한 페이지에서 고르는 주방·가전·리빙 살림 꿀템 추천</p>
-
-    <!-- 페이지 내부 이동 구조 -->
-    <nav class="site-nav" aria-label="페이지 내부 이동">
-      <ul>
-        <li><a href="#about">서비스 소개</a></li>
-        <li><a href="#features">주요 기능</a></li>
-        <li><a href="#how-to">이용 방법</a></li>
-        <li><a href="#picks">추천 상품</a></li>
-        <li><a href="#request">추천 요청</a></li>
-        <li><a href="#myRequests">내 요청</a></li>
-      </ul>
-    </nav>
   </header>
+
+  <!-- 10주차: 주요 메뉴 — 스크롤해도 화면 위에 남고, 좁은 화면에서는 버튼으로 열고 닫는다 -->
+  <nav id="mainNav" class="site-nav" aria-label="주요 메뉴">
+    <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="mainMenu">메뉴 열기</button>
+    <ul id="mainMenu">
+      <li><a href="#about">서비스 소개</a></li>
+      <li><a href="#features">주요 기능</a></li>
+      <li><a href="#how-to">이용 방법</a></li>
+      <li><a href="#picks">추천 상품</a></li>
+      <li><a href="#request">추천 요청</a></li>
+      <li><a href="#myRequests">내 요청</a></li>
+    </ul>
+  </nav>
 
   <main>
     <!-- 서비스 소개 -->
@@ -136,6 +141,8 @@
         <button type="button" class="chip" data-store="coupang" aria-pressed="false">쿠팡</button>
         <button type="button" class="chip" data-store="ohou" aria-pressed="false">오늘의집</button>
       </div>
+      <!-- 10주차: 지금 보이는 상품 수 -->
+      <p id="pickResult" class="filter-result" aria-live="polite">추천 상품 6개를 모두 보여 주고 있어요.</p>
 
       <!-- 6주차: 찜한 상품 수를 알려 주는 문구 -->
       <p id="saveSummary" class="save-summary" aria-live="polite">마음에 드는 상품의 ♡ 찜하기를 눌러 보세요.</p>
@@ -374,7 +381,19 @@
           <p id="requestCount" class="request-count">0건</p>
         </div>
         <p id="listMessage" class="request-message" aria-live="polite">보낸 요청은 여기에 모여요. 검토 대기 중인 요청은 취소할 수 있어요.</p>
+        <!-- 10주차: 진행 상태로 거르기 -->
+        <div class="filter-chips request-filters" role="group" aria-label="요청 상태로 거르기">
+          <button type="button" class="chip is-active" data-status="all" aria-pressed="true">전체</button>
+          <button type="button" class="chip" data-status="waiting" aria-pressed="false">검토 대기</button>
+          <button type="button" class="chip" data-status="cancelled" aria-pressed="false">취소됨</button>
+        </div>
+        <p id="requestResult" class="filter-result" aria-live="polite"></p>
         <ul id="requestList" class="request-list" hidden></ul>
+        <!-- 요청은 있지만 고른 상태에 맞는 요청이 없을 때 -->
+        <div id="filterEmpty" class="empty-requests" hidden>
+          <p id="filterEmptyText"></p>
+          <button id="showAllRequests" class="secondary-button" type="button">전체 요청 보기</button>
+        </div>
         <!-- 요청이 하나도 없을 때 -->
         <div id="emptyRequests" class="empty-requests">
           <p>아직 보낸 요청이 없어요. 고민 중인 살림템이 있다면 추천을 요청해 보세요.</p>
@@ -402,6 +421,6 @@
   </footer>
 
   <!-- HTML 요소가 모두 만들어진 뒤 JavaScript를 실행하도록 body 끝에서 불러온다 -->
-  <script src="script.js?v=20261026"></script>
+  <script src="script.js?v=20261102"></script>
 </body>
 </html>
