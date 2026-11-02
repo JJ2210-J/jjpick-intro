@@ -1,6 +1,10 @@
+// 10주차: 자바스크립트가 켜져 있을 때만 모바일 메뉴를 접어 둔다(꺼져 있으면 메뉴가 그대로 보임)
+document.documentElement.classList.add('js');
+
 // 판매처 필터: 누른 버튼의 판매처 상품만 보여 준다
-const chips = document.querySelectorAll('.filter-chips .chip');
+const chips = document.querySelectorAll('#picks .filter-chips .chip');
 const cards = document.querySelectorAll('.product-card');
+const pickResult = document.querySelector('#pickResult');
 
 chips.forEach(function (chip) {
   chip.addEventListener('click', function () {
@@ -17,8 +21,139 @@ chips.forEach(function (chip) {
     cards.forEach(function (card) {
       card.hidden = store !== 'all' && card.dataset.store !== store;
     });
+
+    // 10주차: 지금 보이는 상품 수를 알려 준다
+    const shown = Array.from(cards).filter(function (card) { return !card.hidden; }).length;
+    if (store === 'all') {
+      pickResult.textContent = '추천 상품 ' + cards.length + '개를 모두 보여 주고 있어요.';
+    } else if (shown === 0) {
+      pickResult.textContent = chip.textContent + ' 상품은 아직 없어요. "전체"를 눌러 다른 상품을 보세요.';
+    } else {
+      pickResult.textContent = chip.textContent + ' 상품 ' + shown + '개를 보여 주고 있어요. (전체 ' + cards.length + '개)';
+    }
   });
 });
+
+// ===== 10주차: 주요 메뉴 — 현재 위치 표시와 모바일 메뉴 =====
+
+const mainNav = document.querySelector('#mainNav');
+const menuToggle = document.querySelector('#menuToggle');
+const navLinks = document.querySelectorAll('#mainMenu a');
+const navTargets = Array.from(navLinks).map(function (link) {
+  return document.querySelector(link.getAttribute('href'));
+});
+let navLockUntil = 0;   // 메뉴를 눌러 이동하는 동안에는 스크롤 위치로 덮어쓰지 않는다
+
+// 현재 위치 메뉴 하나에만 표시(is-current)와 aria-current 를 주고, 나머지에서는 뺀다
+function setCurrentNav(currentLink) {
+  navLinks.forEach(function (link) {
+    const isCurrent = link === currentLink;
+    link.classList.toggle('is-current', isCurrent);
+    if (isCurrent) {
+      link.setAttribute('aria-current', 'page');
+    } else {
+      link.removeAttribute('aria-current');
+    }
+  });
+}
+
+function findNavLinkByHash(hash) {
+  return Array.from(navLinks).find(function (link) { return link.getAttribute('href') === hash; }) || null;
+}
+
+// 화면 위쪽(고정 메뉴 바로 아래)을 지난 마지막 영역을 현재 위치로 본다. 맨 아래에 닿으면 마지막 메뉴.
+function findNavLinkByScroll() {
+  // 메뉴로 고른 목적지(주소의 #)가 아직 화면 위쪽에 보이면 그 메뉴를 그대로 현재 위치로 둔다
+  // (페이지 끝에 가까운 영역은 끝까지 올라오지 못해서, 아래 '맨 아래' 규칙에 밀리지 않게)
+  const hashLink = findNavLinkByHash(window.location.hash);
+  if (hashLink) {
+    const hashTop = document.querySelector(hashLink.getAttribute('href')).getBoundingClientRect().top;
+    if (hashTop >= -10 && hashTop <= window.innerHeight / 2) {
+      return hashLink;
+    }
+  }
+
+  const line = mainNav.offsetHeight + 24;
+  let current = navLinks[0];
+  navTargets.forEach(function (target, i) {
+    if (target && target.getBoundingClientRect().top - line <= 0) {
+      current = navLinks[i];
+    }
+  });
+  const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+  return atBottom ? navLinks[navLinks.length - 1] : current;
+}
+
+function updateCurrentNav() {
+  if (Date.now() < navLockUntil) {
+    return;
+  }
+  setCurrentNav(findNavLinkByScroll());
+}
+
+// 주소의 #이 가리키는 곳을 먼저 표시하고, 이동이 끝나면 실제 스크롤 위치로 다시 맞춘다
+function showNavFromHash() {
+  const link = findNavLinkByHash(window.location.hash);
+  if (link) {
+    setCurrentNav(link);
+    navLockUntil = Date.now() + 900;
+    setTimeout(function () { navLockUntil = 0; updateCurrentNav(); }, 950);
+  } else {
+    updateCurrentNav();
+  }
+}
+
+// 모바일 메뉴: 실제 열림 상태(is-open), 버튼 문구, aria-expanded 를 함께 바꾼다
+function setMenuOpen(open) {
+  mainNav.classList.toggle('is-open', open);
+  menuToggle.textContent = open ? '메뉴 닫기' : '메뉴 열기';
+  menuToggle.setAttribute('aria-expanded', String(open));
+}
+
+menuToggle.addEventListener('click', function () {
+  setMenuOpen(!mainNav.classList.contains('is-open'));
+});
+
+// 목적지를 고르면 메뉴를 닫고, 고른 메뉴를 바로 현재 위치로 표시한다
+navLinks.forEach(function (link) {
+  link.addEventListener('click', function () {
+    setMenuOpen(false);
+    setCurrentNav(link);
+    navLockUntil = Date.now() + 900;
+    setTimeout(function () { navLockUntil = 0; updateCurrentNav(); }, 950);
+  });
+});
+
+// Esc 로도 닫을 수 있게 하고, 커서를 버튼으로 돌려준다
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && mainNav.classList.contains('is-open')) {
+    setMenuOpen(false);
+    menuToggle.focus();
+  }
+});
+
+// 넓은 화면으로 바뀌면 열림 상태를 정리한다(넓은 화면에서는 메뉴가 항상 보임)
+window.matchMedia('(min-width: 769px)').addEventListener('change', function (event) {
+  if (event.matches) {
+    setMenuOpen(false);
+  }
+});
+
+// 스크롤할 때(한 프레임에 한 번만), 뒤로 가기·앞으로 가기로 #이 바뀔 때, 새로 고침 뒤에 현재 위치를 맞춘다
+let navTicking = false;
+window.addEventListener('scroll', function () {
+  if (navTicking) {
+    return;
+  }
+  navTicking = true;
+  requestAnimationFrame(function () {
+    navTicking = false;
+    updateCurrentNav();
+  });
+}, { passive: true });
+window.addEventListener('hashchange', showNavFromHash);
+window.addEventListener('load', showNavFromHash);
+showNavFromHash();
 
 // ===== 7주차: 추천 요청 흐름 (시작 → 제품 입력 → 조건 선택 → 확인 → 완료) =====
 // 5주차의 입력 검사, 6주차의 글자 수·안내 확인 체크박스는 각 단계 안에서 그대로 쓴다
@@ -209,7 +344,7 @@ function showItemResult(result) {
     // 이미 요청한 제품이면: 내 요청 목록의 그 요청을 강조한다
     itemInput.removeAttribute('aria-invalid');
     blockedByRequestId = result.requestId;
-    const requestItem = requestList.querySelector('.request-item[data-id="' + result.requestId + '"]');
+    const requestItem = ensureRequestVisible(result.requestId);
     requestItem.classList.add('is-highlight');
     requestItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -477,7 +612,7 @@ stepConfirm.addEventListener('submit', function (event) {
     agreeMessage.classList.remove('is-ready');
     agreeMessage.classList.add('is-error');
     clearHighlight();
-    const requestItem = requestList.querySelector('.request-item[data-id="' + sameRequest.id + '"]');
+    const requestItem = ensureRequestVisible(sameRequest.id);
     requestItem.classList.add('is-highlight');
     requestItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
@@ -539,6 +674,11 @@ const requestCount = document.querySelector('#requestCount');
 const listMessage = document.querySelector('#listMessage');
 const defaultListMessage = listMessage.textContent;
 const emptyRequests = document.querySelector('#emptyRequests');
+const requestFilterButtons = document.querySelectorAll('.request-filters .chip');
+const requestResult = document.querySelector('#requestResult');
+const filterEmpty = document.querySelector('#filterEmpty');
+const filterEmptyText = document.querySelector('#filterEmptyText');
+let requestFilter = 'all';   // 10주차: 지금 고른 상태 필터(all / waiting / cancelled)
 const cancelDialog = document.querySelector('#cancelDialog');
 const cancelText = document.querySelector('#cancelText');
 
@@ -727,8 +867,70 @@ function renderRequests() {
     requestCount.textContent = '검토 대기 ' + waitingCount + '건 · 취소 ' + cancelledCount + '건';
   }
 
-  requestList.hidden = myRequests.length === 0;
-  emptyRequests.hidden = myRequests.length !== 0;
+  applyRequestFilter();
+}
+
+// 10주차: 고른 상태에 맞는 요청만 보이게 하고, 결과 수와 빈 결과 안내를 바꾼다
+function applyRequestFilter() {
+  const total = myRequests.length;
+  let shown = 0;
+  requestList.querySelectorAll('.request-item').forEach(function (li) {
+    const request = findRequest(Number(li.dataset.id));
+    const visible = requestFilter === 'all' || request.status === requestFilter;
+    li.hidden = !visible;
+    if (visible) {
+      shown = shown + 1;
+    }
+  });
+
+  const label = requestFilter === 'waiting' ? '검토 대기' : '취소된';
+
+  // 전체 요청이 없을 때 / 요청은 있지만 고른 상태에 맞는 게 없을 때 / 결과가 있을 때를 나눠 안내한다
+  emptyRequests.hidden = total !== 0;
+  filterEmpty.hidden = !(total > 0 && shown === 0);
+  requestList.hidden = shown === 0;
+
+  if (total === 0) {
+    requestResult.textContent = '';
+  } else if (requestFilter === 'all') {
+    requestResult.textContent = '전체 요청 ' + total + '건을 보여 주고 있어요.';
+  } else {
+    requestResult.textContent = label + ' 요청 ' + shown + '건을 보여 주고 있어요. (전체 ' + total + '건)';
+    if (shown === 0) {
+      filterEmptyText.textContent = (requestFilter === 'waiting' ? '검토 대기 중인' : '취소된') +
+        ' 요청이 없어요. 다른 상태를 고르거나 "전체 요청 보기"를 눌러 주세요.';
+    }
+  }
+}
+
+function setRequestFilter(value) {
+  requestFilter = value;
+  requestFilterButtons.forEach(function (button) {
+    const selected = button.dataset.status === value;
+    button.classList.toggle('is-active', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+  applyRequestFilter();
+}
+
+requestFilterButtons.forEach(function (button) {
+  button.addEventListener('click', function () {
+    setRequestFilter(button.dataset.status);
+  });
+});
+
+document.querySelector('#showAllRequests').addEventListener('click', function () {
+  setRequestFilter('all');
+  requestFilterButtons[0].focus();
+});
+
+// 10주차: 강조하려는 요청이 필터 때문에 숨어 있으면 '전체'로 돌려서 보이게 한다
+function ensureRequestVisible(id) {
+  const li = requestList.querySelector('.request-item[data-id="' + id + '"]');
+  if (li && li.hidden) {
+    setRequestFilter('all');
+  }
+  return li;
 }
 
 // 목록 안의 버튼은 하나의 click 이벤트에서 data-action 으로 나눠 처리한다
@@ -751,7 +953,7 @@ requestList.addEventListener('click', function (event) {
   const waitingRequest = findWaitingRequest(request.item);
   if (waitingRequest !== null) {
     clearHighlight();
-    requestList.querySelector('.request-item[data-id="' + waitingRequest.id + '"]').classList.add('is-highlight');
+    ensureRequestVisible(waitingRequest.id).classList.add('is-highlight');
     showListMessage('같은 제품("' + request.item + '")의 요청이 이미 검토 대기 중이라 다시 요청할 수 없어요. 표시한 요청을 확인해 주세요.', 'is-error');
     return;
   }
@@ -767,7 +969,13 @@ requestList.addEventListener('click', function (event) {
 });
 
 function focusRequestButton(id) {
-  requestList.querySelector('button[data-id="' + id + '"]').focus();
+  const button = requestList.querySelector('button[data-id="' + id + '"]');
+  // 10주차: 상태가 바뀌어 지금 필터에서 사라졌으면 목록 상자로 커서를 옮긴다
+  if (button && !button.closest('.request-item').hidden) {
+    button.focus();
+  } else {
+    myRequestsBox.focus({ preventScroll: true });
+  }
 }
 
 // 확인 창: 그대로 두기 → 아무것도 바꾸지 않음
