@@ -69,9 +69,9 @@ main,
   font-size: 32px;
   font-weight: 700;
   color: #ffffff;
-  background-color: #c96e54;
+  background-color: #a9573f;
   border-radius: 50%;
-  box-shadow: 0 6px 18px rgba(201, 110, 84, 0.3);
+  box-shadow: 0 6px 18px rgba(169, 87, 63, 0.3);
 }
 
 .header-description {
@@ -127,7 +127,7 @@ html {
 }
 
 .site-nav a:hover {
-  color: #a9573f;
+  color: #8f4a35;
   background-color: #f6ebdc;
   border-color: #a9573f;
 }
@@ -154,6 +154,54 @@ html {
 .content-section,
 .my-requests {
   scroll-margin-top: 76px;
+}
+
+/* 11주차: Tab 으로 옮겨 간 요소도 고정 메뉴 밑에 숨지 않게 */
+html {
+  scroll-padding-top: 80px;
+}
+
+/* ===== 11주차: 키보드 초점 표시 — 모든 링크·버튼·입력칸에 같은 테두리 ===== */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #a9573f;
+  outline-offset: 3px;
+}
+
+/* 진한 배경 위에 있는 버튼은 안쪽에 흰 선을 한 겹 더 둔다 */
+.primary-button:focus-visible,
+.chip.is-active:focus-visible,
+.save-button.is-saved:focus-visible {
+  box-shadow: inset 0 0 0 2px #ffffff;
+}
+
+/* 본문 바로가기: 평소엔 화면 밖에 있다가 Tab 으로 초점을 받으면 내려온다 */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 50;
+  padding: 10px 16px;
+  font-weight: 700;
+  color: #3a322c;
+  background-color: #ffffff;
+  border: 2px solid #a9573f;
+  border-radius: 10px;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* 본문으로 건너뛴 뒤 main 전체에 테두리가 생기지 않게 (Tab 순서에는 없음) */
+main[tabindex]:focus,
+main[tabindex]:focus-visible {
+  outline: none;
 }
 
 /* ===== 섹션 카드 ===== */
@@ -361,6 +409,11 @@ html {
   border-color: #a9573f;
 }
 
+/* 11주차: 고른 필터는 색 말고 ✓ 기호로도 보여 준다 */
+.chip[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+
 .product-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -494,10 +547,11 @@ html {
   outline-offset: 2px;
 }
 
+/* 11주차: 흰 글자가 잘 보이게 더 진한 색으로 (3.6:1 → 5.1:1) */
 .save-button.is-saved {
   color: #ffffff;
-  background-color: #c96e54;
-  border-color: #c96e54;
+  background-color: #a9573f;
+  border-color: #a9573f;
 }
 
 .product-card.is-saved {
@@ -573,7 +627,7 @@ html {
   padding: 8px 12px;
   font-size: 14px;
   font-weight: 700;
-  color: #8a7d72;
+  color: #6b5e54;
   background-color: #fbf4ea;
   border: 1px solid #efe6d8;
   border-radius: 999px;
@@ -590,14 +644,19 @@ html {
   height: 24px;
   font-size: 13px;
   color: #ffffff;
-  background-color: #b5a99d;
+  background-color: #6f655c;
   border-radius: 50%;
 }
 
+/* 11주차: 지금 단계는 색 말고 굵은 밑줄로도 구분 */
 .flow-step.is-current {
   color: #a9573f;
   background-color: #ffffff;
   border-color: #a9573f;
+  border-width: 2px;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .flow-step.is-current::before {
@@ -611,7 +670,7 @@ html {
 
 .flow-step.is-done::before {
   content: "✓";
-  background-color: #4f8a5f;
+  background-color: #2f7a4b;
 }
 
 .request-section .flow-progress {
@@ -656,7 +715,7 @@ html {
 .optional {
   font-size: 13px;
   font-weight: 400;
-  color: #8a7d72;
+  color: #6b5e54;
 }
 
 .item-field,
@@ -735,6 +794,13 @@ html {
   display: none;
 }
 
+/* 11주차: 오류 문구는 빨간색만이 아니라 ⚠ 기호로도 알린다 */
+.request-section .field-error::before,
+.request-section .request-message.is-error::before,
+.request-section .send-status.is-error::before {
+  content: "⚠ ";
+}
+
 /* 이전·다음 버튼 줄 */
 .step-buttons {
   display: flex;
@@ -757,6 +823,7 @@ html {
 }
 
 .secondary-button:hover {
+  color: #8f4a35;
   background-color: #f6ebdc;
 }
 
@@ -850,7 +917,7 @@ html {
 .item-count {
   font-size: 13px;
   font-weight: 700;
-  color: #8a7d72;
+  color: #6b5e54;
 }
 
 /* 9주차: 조건을 채우면 초록, 거의 다 찼으면 주황 — 문구도 함께 바뀐다 */
@@ -1027,10 +1094,12 @@ html {
 }
 
 /* 6주차: 안내를 확인하기 전 버튼은 회색으로 꺼 둔다 */
+/* 11주차: 꺼진 버튼도 글자는 읽히게 (흰 글자 2.3:1 → 진한 글자 7.3:1), 점선 테두리로 꺼진 상태 표시 */
 .primary-button:disabled,
 .primary-button:disabled:hover {
-  color: #ffffff;
-  background-color: #b5a99d;
+  color: #4a413a;
+  background-color: #e3dbd1;
+  border: 2px dashed #8a7d72;
   cursor: not-allowed;
   transform: none;
 }
@@ -1186,7 +1255,7 @@ html {
 }
 
 .request-item.is-cancelled h4 {
-  color: #8a7d72;
+  color: #6b5e54;
   text-decoration: line-through;
 }
 

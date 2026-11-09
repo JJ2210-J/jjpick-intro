@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="JJ픽은 주방·가전·리빙 살림 꿀템을 짧은 영상으로 소개하고, 영상에 나온 제품을 한 페이지에 모아 보여 주는 추천 서비스입니다.">
-  <title>JJ픽 | 서비스 소개</title>
-  <link rel="stylesheet" href="style.css?v=20261102">
+  <title>서비스 소개 | JJ픽</title>
+  <link rel="stylesheet" href="style.css?v=20261109">
 </head>
 <body>
   <!--
@@ -31,7 +31,13 @@
     10주차: 메뉴 이동과 목록 탐색
     목표: 지금 어디를 보고 있는지 알고, 원하는 요청만 골라 보고, 휴대폰에서도 메뉴로 바로 이동한다
     추가: 화면 위 고정 메뉴 · 현재 위치 표시(aria-current) · 모바일 메뉴 열기/닫기 · 내 요청 상태 필터 · 결과 수와 빈 결과 안내
+
+    11주차: 웹 접근성
+    목표: 색을 구분하기 어렵거나, 마우스 없이 키보드만 쓰거나, 화면 낭독기로 듣는 사람도 같은 기능을 쓴다
+    추가: 본문 바로가기 · 모든 조작 요소의 초점 표시 · 글자 대비 4.5:1 이상 · 색 말고 기호(✓·⚠)로도 상태 표시 · 버튼 이름에 대상 넣기 · 탭 방향키 이동 · 탭 제목에 현재 위치
   -->
+  <!-- 11주차: 키보드로 들어오면 첫 Tab 에 나타나서 메뉴를 건너뛰고 본문으로 간다 -->
+  <a class="skip-link" href="#main">본문 바로가기</a>
   <!-- 서비스 이름과 한 줄 소개 -->
   <header id="top" class="site-header">
     <span class="brand-mark" aria-hidden="true">JJ</span>
@@ -52,7 +58,7 @@
     </ul>
   </nav>
 
-  <main>
+  <main id="main" tabindex="-1">
     <!-- 서비스 소개 -->
     <section id="about" class="content-section">
       <h2>서비스 소개</h2>
@@ -77,16 +83,17 @@
     <!-- 주요 기능 3개: 6주차에 탭으로 바꿔 누른 기능의 설명만 보여 준다 -->
     <section id="features" class="content-section">
       <h2>주요 기능</h2>
+      <!-- 11주차: 탭은 ← → 방향키로 옮기고, Tab 은 고른 탭 하나에만 멈춘다 -->
       <div class="tabs" role="tablist" aria-label="주요 기능 고르기">
         <button id="tab-video" class="tab is-active" type="button" role="tab" aria-selected="true"
-                aria-controls="feature-video" data-target="#feature-video">🎬 영상으로 확인</button>
+                aria-controls="feature-video" data-target="#feature-video"><span aria-hidden="true">🎬</span> 영상으로 확인</button>
         <button id="tab-collect" class="tab" type="button" role="tab" aria-selected="false"
-                aria-controls="feature-collect" data-target="#feature-collect">🧺 한 페이지 모음</button>
+                aria-controls="feature-collect" data-target="#feature-collect" tabindex="-1"><span aria-hidden="true">🧺</span> 한 페이지 모음</button>
         <button id="tab-store" class="tab" type="button" role="tab" aria-selected="false"
-                aria-controls="feature-store" data-target="#feature-store">🏷️ 판매처별 보기</button>
+                aria-controls="feature-store" data-target="#feature-store" tabindex="-1"><span aria-hidden="true">🏷️</span> 판매처별 보기</button>
       </div>
 
-      <div id="feature-video" class="panel is-active" role="tabpanel" aria-labelledby="tab-video">
+      <div id="feature-video" class="panel is-active" role="tabpanel" aria-labelledby="tab-video" tabindex="0">
         <span class="feature-icon" aria-hidden="true">🎬</span>
         <div class="panel-text">
           <h3>짧은 영상으로 확인하기</h3>
@@ -97,7 +104,7 @@
           </ul>
         </div>
       </div>
-      <div id="feature-collect" class="panel" role="tabpanel" aria-labelledby="tab-collect" hidden>
+      <div id="feature-collect" class="panel" role="tabpanel" aria-labelledby="tab-collect" tabindex="0" hidden>
         <span class="feature-icon" aria-hidden="true">🧺</span>
         <div class="panel-text">
           <h3>한 페이지에서 모아 보기</h3>
@@ -108,7 +115,7 @@
           </ul>
         </div>
       </div>
-      <div id="feature-store" class="panel" role="tabpanel" aria-labelledby="tab-store" hidden>
+      <div id="feature-store" class="panel" role="tabpanel" aria-labelledby="tab-store" tabindex="0" hidden>
         <span class="feature-icon" aria-hidden="true">🏷️</span>
         <div class="panel-text">
           <h3>판매처별로 골라 보기</h3>
@@ -272,9 +279,9 @@
           <h3 tabindex="-1">어떤 조건으로 찾아 드릴까요?</h3>
           <fieldset class="choice-group" aria-describedby="categoryError">
             <legend>카테고리 <span class="required">(필수)</span></legend>
-            <label class="choice"><input type="radio" name="category" value="주방"><span>🍳 주방</span></label>
-            <label class="choice"><input type="radio" name="category" value="가전"><span>🔌 가전</span></label>
-            <label class="choice"><input type="radio" name="category" value="리빙"><span>🧺 리빙</span></label>
+            <label class="choice"><input type="radio" name="category" value="주방"><span><span aria-hidden="true">🍳</span> 주방</span></label>
+            <label class="choice"><input type="radio" name="category" value="가전"><span><span aria-hidden="true">🔌</span> 가전</span></label>
+            <label class="choice"><input type="radio" name="category" value="리빙"><span><span aria-hidden="true">🧺</span> 리빙</span></label>
           </fieldset>
           <p id="categoryError" class="field-error" aria-live="polite"></p>
 
@@ -331,23 +338,23 @@
           <dl class="summary-list">
             <div class="summary-row">
               <dt>제품</dt>
-              <dd><span id="summaryItem"></span><button class="edit-button" type="button" data-go="1">수정</button></dd>
+              <dd><span id="summaryItem"></span><button class="edit-button" type="button" aria-label="제품 수정" data-go="1">수정</button></dd>
             </div>
             <div class="summary-row">
               <dt>카테고리</dt>
-              <dd><span id="summaryCategory"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
+              <dd><span id="summaryCategory"></span><button class="edit-button" type="button" aria-label="카테고리 수정" data-go="2">수정</button></dd>
             </div>
             <div class="summary-row">
               <dt>예산</dt>
-              <dd><span id="summaryBudget"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
+              <dd><span id="summaryBudget"></span><button class="edit-button" type="button" aria-label="예산 수정" data-go="2">수정</button></dd>
             </div>
             <div class="summary-row">
               <dt>써 본 제품</dt>
-              <dd><span id="summaryUsed"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
+              <dd><span id="summaryUsed"></span><button class="edit-button" type="button" aria-label="써 본 제품 수정" data-go="2">수정</button></dd>
             </div>
             <div class="summary-row">
               <dt>더 알려 주실 점</dt>
-              <dd><span id="summaryMemo"></span><button class="edit-button" type="button" data-go="2">수정</button></dd>
+              <dd><span id="summaryMemo"></span><button class="edit-button" type="button" aria-label="더 알려 주실 점 수정" data-go="2">수정</button></dd>
             </div>
           </dl>
           <label class="agree-row">
@@ -365,7 +372,7 @@
 
         <!-- 완료 -->
         <div class="request-step request-done" data-step="4" hidden>
-          <h3 tabindex="-1">✅ 추천 요청이 접수되었어요</h3>
+          <h3 tabindex="-1"><span aria-hidden="true">✅</span> 추천 요청이 접수되었어요</h3>
           <p id="doneMessage"></p>
           <div class="step-buttons">
             <button id="showMyRequests" class="secondary-button" type="button">내 요청 목록 보기</button>
@@ -421,6 +428,6 @@
   </footer>
 
   <!-- HTML 요소가 모두 만들어진 뒤 JavaScript를 실행하도록 body 끝에서 불러온다 -->
-  <script src="script.js?v=20261102"></script>
+  <script src="script.js?v=20261109"></script>
 </body>
 </html>
