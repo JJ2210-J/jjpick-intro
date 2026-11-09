@@ -55,6 +55,10 @@ function setCurrentNav(currentLink) {
       link.removeAttribute('aria-current');
     }
   });
+  // 11주차: 브라우저 탭 제목에도 지금 보는 곳을 적는다 (예: "추천 요청 | JJ픽")
+  if (currentLink) {
+    document.title = currentLink.textContent.trim() + ' | JJ픽';
+  }
 }
 
 function findNavLinkByHash(hash) {
@@ -839,6 +843,8 @@ function createRequestItem(request) {
     button.dataset.action = 'restore';
     button.textContent = '다시 요청하기';
   }
+  // 11주차: 같은 이름의 버튼이 여러 개라 어떤 요청의 버튼인지 이름에 넣는다 (예: "전기포트 요청 취소")
+  button.setAttribute('aria-label', request.item + ' ' + button.textContent);
   li.append(button);
   return li;
 }
@@ -1058,6 +1064,7 @@ function handleSaveClick(event) {
   card.classList.toggle('is-saved', isSaved);
   button.setAttribute('aria-pressed', String(isSaved));
   button.textContent = isSaved ? '♥ 찜했어요' : '♡ 찜하기';
+  setSaveLabel(button);
 
   if (isSaved) {
     savedCount = savedCount + 1;
@@ -1067,7 +1074,15 @@ function handleSaveClick(event) {
   updateSaveSummary();
 }
 
+// 11주차: "찜하기" 버튼이 6개라 화면 낭독기에서는 상품 이름을 붙여 읽게 한다 (♡·♥ 기호는 빼고)
+function setSaveLabel(button) {
+  const name = button.closest('.product-card').querySelector('.product-name').textContent;
+  const isSaved = button.getAttribute('aria-pressed') === 'true';
+  button.setAttribute('aria-label', name + (isSaved ? ' 찜했어요' : ' 찜하기'));
+}
+
 saveButtons.forEach(function (button) {
+  setSaveLabel(button);
   button.addEventListener('click', handleSaveClick);
 });
 
@@ -1079,6 +1094,7 @@ function resetTabsAndPanels() {
   tabs.forEach(function (tab) {
     tab.classList.remove('is-active');
     tab.setAttribute('aria-selected', 'false');
+    tab.tabIndex = -1;
   });
   panels.forEach(function (panel) {
     panel.classList.remove('is-active');
@@ -1090,6 +1106,7 @@ function activateTab(clickedTab) {
   const targetPanel = document.querySelector(clickedTab.dataset.target);
   clickedTab.classList.add('is-active');
   clickedTab.setAttribute('aria-selected', 'true');
+  clickedTab.tabIndex = 0;
   targetPanel.classList.add('is-active');
   targetPanel.hidden = false;
 }
@@ -1099,6 +1116,29 @@ function handleTabClick(event) {
   activateTab(event.currentTarget);
 }
 
+// 11주차: 키보드로는 ← → 로 옆 탭, Home·End 로 처음·끝 탭을 고른다. Tab 키는 고른 탭에서 바로 내용으로 넘어간다
+function handleTabKeydown(event) {
+  const list = Array.from(tabs);
+  const index = list.indexOf(event.currentTarget);
+  let next = null;
+  if (event.key === 'ArrowRight') {
+    next = list[(index + 1) % list.length];
+  } else if (event.key === 'ArrowLeft') {
+    next = list[(index - 1 + list.length) % list.length];
+  } else if (event.key === 'Home') {
+    next = list[0];
+  } else if (event.key === 'End') {
+    next = list[list.length - 1];
+  }
+  if (next) {
+    event.preventDefault();
+    resetTabsAndPanels();
+    activateTab(next);
+    next.focus();
+  }
+}
+
 tabs.forEach(function (tab) {
   tab.addEventListener('click', handleTabClick);
+  tab.addEventListener('keydown', handleTabKeydown);
 });
