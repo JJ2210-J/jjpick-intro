@@ -951,7 +951,7 @@ requestList.addEventListener('click', function (event) {
     cancelTargetId = request.id;
     cancelText.textContent = '"' + request.item + '"(' + request.category + ' · ' + request.budget +
       ') 요청을 취소하면 추천 영상 준비가 멈춰요. 취소한 뒤에도 목록에서 다시 요청할 수 있어요.';
-    cancelDialog.showModal();
+    openModal(cancelDialog, null);   // 12주차: 공통 모달 열기 (닫은 뒤 초점은 아래 close 처리에서 요청 버튼으로)
     return;
   }
 
@@ -984,10 +984,7 @@ function focusRequestButton(id) {
   }
 }
 
-// 확인 창: 그대로 두기 → 아무것도 바꾸지 않음
-document.querySelector('#cancelKeep').addEventListener('click', function () {
-  cancelDialog.close();
-});
+// 확인 창: 그대로 두기 → 아무것도 바꾸지 않음 (12주차: 버튼의 data-modal-close 로 공통 닫기 처리)
 
 // Esc 로 닫거나 그대로 두기를 누르면 원래 버튼으로 커서를 돌려준다
 cancelDialog.addEventListener('close', function () {
@@ -1087,58 +1084,224 @@ saveButtons.forEach(function (button) {
 });
 
 // --- 탭: 누른 탭만 선택 표시하고, 그 탭의 패널만 보여 준다 ---
-const tabs = document.querySelectorAll('.tab');
-const panels = document.querySelectorAll('.panel');
+// 12주차: 탭 묶음(role="tablist") 하나를 받아서 동작을 붙이는 함수로 정리했다.
+// 다른 곳에 탭을 더 만들어도 HTML 구조만 맞추면 initTabs 를 그대로 다시 쓴다.
+function initTabs(tablist) {
+  const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
 
-function resetTabsAndPanels() {
-  tabs.forEach(function (tab) {
-    tab.classList.remove('is-active');
-    tab.setAttribute('aria-selected', 'false');
-    tab.tabIndex = -1;
-  });
-  panels.forEach(function (panel) {
-    panel.classList.remove('is-active');
-    panel.hidden = true;
-  });
-}
-
-function activateTab(clickedTab) {
-  const targetPanel = document.querySelector(clickedTab.dataset.target);
-  clickedTab.classList.add('is-active');
-  clickedTab.setAttribute('aria-selected', 'true');
-  clickedTab.tabIndex = 0;
-  targetPanel.classList.add('is-active');
-  targetPanel.hidden = false;
-}
-
-function handleTabClick(event) {
-  resetTabsAndPanels();
-  activateTab(event.currentTarget);
-}
-
-// 11주차: 키보드로는 ← → 로 옆 탭, Home·End 로 처음·끝 탭을 고른다. Tab 키는 고른 탭에서 바로 내용으로 넘어간다
-function handleTabKeydown(event) {
-  const list = Array.from(tabs);
-  const index = list.indexOf(event.currentTarget);
-  let next = null;
-  if (event.key === 'ArrowRight') {
-    next = list[(index + 1) % list.length];
-  } else if (event.key === 'ArrowLeft') {
-    next = list[(index - 1 + list.length) % list.length];
-  } else if (event.key === 'Home') {
-    next = list[0];
-  } else if (event.key === 'End') {
-    next = list[list.length - 1];
+  function selectTab(selectedTab) {
+    tabs.forEach(function (tab) {
+      const selected = tab === selectedTab;
+      const panel = document.querySelector(tab.dataset.target);
+      tab.classList.toggle('is-active', selected);
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      panel.classList.toggle('is-active', selected);
+      panel.hidden = !selected;
+    });
   }
-  if (next) {
-    event.preventDefault();
-    resetTabsAndPanels();
-    activateTab(next);
-    next.focus();
-  }
+
+  tabs.forEach(function (tab, index) {
+    tab.addEventListener('click', function () {
+      selectTab(tab);
+    });
+    // 11주차: 키보드로는 ← → 로 옆 탭, Home·End 로 처음·끝 탭을 고른다. Tab 키는 고른 탭에서 바로 내용으로 넘어간다
+    tab.addEventListener('keydown', function (event) {
+      const next = findKeyTarget(tabs, index, event.key, 'ArrowLeft', 'ArrowRight');
+      if (next) {
+        event.preventDefault();
+        selectTab(next);
+        next.focus();
+      }
+    });
+  });
 }
 
-tabs.forEach(function (tab) {
-  tab.addEventListener('click', handleTabClick);
-  tab.addEventListener('keydown', handleTabKeydown);
+// 12주차: 탭(← →)과 아코디언(↑ ↓)이 함께 쓰는 방향키 처리 — 옮겨 갈 버튼을 돌려준다(해당 없는 키면 null)
+function findKeyTarget(list, index, key, prevKey, nextKey) {
+  if (key === nextKey) {
+    return list[(index + 1) % list.length];
+  }
+  if (key === prevKey) {
+    return list[(index - 1 + list.length) % list.length];
+  }
+  if (key === 'Home') {
+    return list[0];
+  }
+  if (key === 'End') {
+    return list[list.length - 1];
+  }
+  return null;
+}
+
+document.querySelectorAll('[role="tablist"]').forEach(initTabs);
+
+// ===== 12주차: 아코디언 (자주 묻는 질문) =====
+// data-accordion 이 붙은 묶음마다 같은 함수를 붙인다. 질문 버튼의 aria-expanded 가 지금 상태다.
+function initAccordion(root) {
+  const triggers = Array.from(root.querySelectorAll('.accordion-trigger'));
+  const allButton = root.querySelector('[data-accordion-all]');
+  const summary = root.querySelector('.accordion-summary');
+
+  // 질문 하나를 펼치거나 접는다 — 답 영역, +/− 표시, "펼치기/접기" 문구를 함께 바꾼다
+  function setItem(trigger, open) {
+    const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+    trigger.setAttribute('aria-expanded', String(open));
+    trigger.querySelector('.accordion-state').textContent = open ? '접기' : '펼치기';
+    trigger.closest('.accordion-item').classList.toggle('is-open', open);
+    panel.hidden = !open;
+  }
+
+  function countOpen() {
+    return triggers.filter(function (t) { return t.getAttribute('aria-expanded') === 'true'; }).length;
+  }
+
+  // 몇 개를 펼쳤는지 알려 주고, 전체 버튼 문구를 맞춘다
+  function updateSummary() {
+    const openCount = countOpen();
+    if (summary) {
+      if (openCount === 0) {
+        summary.textContent = '질문 ' + triggers.length + '개가 모두 접혀 있어요. 궁금한 질문을 눌러 보세요.';
+      } else {
+        summary.textContent = '질문 ' + triggers.length + '개 중 ' + openCount + '개를 펼쳐 두었어요.';
+      }
+    }
+    if (allButton) {
+      allButton.textContent = openCount === triggers.length ? '모두 접기' : '모두 펼치기';
+    }
+  }
+
+  triggers.forEach(function (trigger, index) {
+    setItem(trigger, trigger.getAttribute('aria-expanded') === 'true');
+    trigger.addEventListener('click', function () {
+      setItem(trigger, trigger.getAttribute('aria-expanded') !== 'true');
+      updateSummary();
+    });
+    // ↑ ↓ 로 이전·다음 질문, Home·End 로 처음·끝 질문으로 초점을 옮긴다(펼치고 접는 건 Enter·Space)
+    trigger.addEventListener('keydown', function (event) {
+      const next = findKeyTarget(triggers, index, event.key, 'ArrowUp', 'ArrowDown');
+      if (next) {
+        event.preventDefault();
+        next.focus();
+      }
+    });
+  });
+
+  // 하나라도 접혀 있으면 모두 펼치고, 다 펼쳐져 있으면 모두 접는다
+  if (allButton) {
+    allButton.addEventListener('click', function () {
+      const openAll = countOpen() !== triggers.length;
+      triggers.forEach(function (trigger) { setItem(trigger, openAll); });
+      updateSummary();
+    });
+  }
+  updateSummary();
+}
+
+document.querySelectorAll('[data-accordion]').forEach(initAccordion);
+
+// ===== 12주차: 모달 공통 동작 =====
+// openModal 로 열고, data-modal-close 버튼·Esc·바깥(배경) 클릭으로 닫는다.
+// 닫히면 연 버튼으로 초점을 돌려준다. 요청 취소 확인 창과 상품 자세히 보기가 함께 쓴다.
+const modalOpeners = new Map();   // 모달마다 연 버튼을 기억한다
+
+function openModal(dialog, opener) {
+  modalOpeners.set(dialog, opener || null);
+  document.body.classList.add('modal-open');
+  dialog.showModal();
+}
+
+document.querySelectorAll('dialog.modal').forEach(function (dialog) {
+  dialog.querySelectorAll('[data-modal-close]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      dialog.close();
+    });
+  });
+  // 모달이 열려 있는 동안 Tab 이 창 밖(주소창 등)으로 나가지 않고 창 안에서 돌게 한다
+  dialog.addEventListener('keydown', function (event) {
+    if (event.key !== 'Tab') {
+      return;
+    }
+    const items = Array.from(dialog.querySelectorAll('button, a[href], input, select, textarea'))
+      .filter(function (item) { return !item.disabled && item.offsetParent !== null; });
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+  // 안쪽 .modal-box 가 창을 꽉 채우므로, dialog 자신이 눌렸다면 바깥 배경을 누른 것이다
+  dialog.addEventListener('click', function (event) {
+    if (event.target === dialog) {
+      dialog.close();
+    }
+  });
+  dialog.addEventListener('close', function () {
+    document.body.classList.remove('modal-open');
+    const opener = modalOpeners.get(dialog);
+    if (opener && opener.isConnected) {
+      opener.focus();
+    }
+    modalOpeners.delete(dialog);
+  });
+});
+
+// --- 상품 자세히 보기: 누른 카드의 내용으로 모달을 채운다 ---
+const productModalSave = document.querySelector('#productModalSave');
+const productModalState = document.querySelector('#productModalState');
+let modalCard = null;   // 지금 모달에 보여 주는 상품 카드
+
+// 모달의 찜 버튼과 상태 문구를 카드의 찜 상태에 맞춘다
+function syncModalSave() {
+  const name = modalCard.querySelector('.product-name').textContent;
+  const isSaved = modalCard.querySelector('.save-button').getAttribute('aria-pressed') === 'true';
+  productModalSave.textContent = isSaved ? '♥ 찜했어요' : '♡ 찜하기';
+  productModalSave.setAttribute('aria-pressed', String(isSaved));
+  productModalSave.setAttribute('aria-label', name + (isSaved ? ' 찜했어요' : ' 찜하기'));
+  productModalState.textContent = isSaved
+    ? '♥ 찜한 상품이에요. 목록에도 표시했어요. 다시 누르면 찜이 풀려요.'
+    : '아직 찜하지 않은 상품이에요.';
+  productModalState.classList.toggle('is-saved', isSaved);
+}
+
+function fillProductModal(card) {
+  modalCard = card;
+  document.querySelector('#productModalTitle').textContent = card.querySelector('.product-name').textContent;
+  document.querySelector('#productModalDesc').textContent = card.querySelector('.product-desc').textContent;
+  document.querySelector('#productModalPrice').textContent = card.querySelector('.product-price').textContent;
+  document.querySelector('#productModalThumb').textContent = card.querySelector('.product-thumb').textContent;
+  // 판매처 배지와 카테고리는 카드에 있는 것을 그대로 복사해서 같은 모양으로 보여 준다
+  const meta = document.querySelector('#productModalMeta');
+  meta.replaceChildren();
+  card.querySelector('.product-meta').childNodes.forEach(function (node) {
+    meta.appendChild(node.cloneNode(true));
+  });
+  // 상품마다 data-detail 에 "|" 로 나눠 적어 둔 내용을 목록으로 만든다
+  const points = document.querySelector('#productModalPoints');
+  points.replaceChildren();
+  card.dataset.detail.split('|').forEach(function (text) {
+    const li = document.createElement('li');
+    li.textContent = text;
+    points.appendChild(li);
+  });
+  syncModalSave();
+}
+
+document.querySelectorAll('.detail-button').forEach(function (button) {
+  const card = button.closest('.product-card');
+  button.setAttribute('aria-label', card.querySelector('.product-name').textContent + ' 자세히 보기');
+  button.addEventListener('click', function () {
+    fillProductModal(card);
+    openModal(document.querySelector(button.dataset.modalOpen), button);
+  });
+});
+
+// 모달에서 찜하면 카드의 찜 버튼을 누른 것과 같게 처리한다(카드 표시와 찜 개수 문구도 같이 바뀐다)
+productModalSave.addEventListener('click', function () {
+  modalCard.querySelector('.save-button').click();
+  syncModalSave();
 });
