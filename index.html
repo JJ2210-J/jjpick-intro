@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="JJ픽은 주방·가전·리빙 살림 꿀템을 짧은 영상으로 소개하고, 영상에 나온 제품을 한 페이지에 모아 보여 주는 추천 서비스입니다.">
   <title>서비스 소개 | JJ픽</title>
-  <link rel="stylesheet" href="style.css?v=20261109">
+  <link rel="stylesheet" href="style.css?v=20261117">
 </head>
 <body>
   <!--
@@ -35,6 +35,10 @@
     11주차: 웹 접근성
     목표: 색을 구분하기 어렵거나, 마우스 없이 키보드만 쓰거나, 화면 낭독기로 듣는 사람도 같은 기능을 쓴다
     추가: 본문 바로가기 · 모든 조작 요소의 초점 표시 · 글자 대비 4.5:1 이상 · 색 말고 기호(✓·⚠)로도 상태 표시 · 버튼 이름에 대상 넣기 · 탭 방향키 이동 · 탭 제목에 현재 위치
+
+    12주차: 재사용 UI 컴포넌트
+    목표: 궁금한 점은 펼쳐서 바로 읽고, 상품은 목록을 떠나지 않고 자세히 본 뒤 찜한다
+    추가: 아코디언(자주 묻는 질문) · 모달(상품 자세히 보기, 요청 취소 확인 창과 같은 공통 동작) · 탭 동작을 공통 함수로 정리
   -->
   <!-- 11주차: 키보드로 들어오면 첫 Tab 에 나타나서 메뉴를 건너뛰고 본문으로 간다 -->
   <a class="skip-link" href="#main">본문 바로가기</a>
@@ -136,6 +140,70 @@
         <li>영상 속 안내에 따라 프로필 링크를 눌러 추천 모음 페이지로 들어갑니다.</li>
         <li>판매처를 골라 영상에서 본 제품을 찾고, 가격과 설명을 확인합니다.</li>
       </ol>
+
+      <!-- 12주차: 아코디언 — 질문을 누르면 답이 펼쳐지고, 다시 누르면 접힌다 -->
+      <div class="faq" data-accordion>
+        <div class="accordion-head">
+          <h3>자주 묻는 질문</h3>
+          <button class="pill-button accordion-all" type="button" data-accordion-all>모두 펼치기</button>
+        </div>
+        <p class="accordion-summary filter-result" aria-live="polite">질문 5개 중 1개를 펼쳐 두었어요.</p>
+        <div class="accordion-item">
+          <h4 class="accordion-heading">
+            <button id="faq-q1" class="accordion-trigger" type="button" aria-expanded="true" aria-controls="faq-a1">
+              <span class="accordion-question">영상은 어디에서 볼 수 있나요?</span>
+              <span class="accordion-state">접기</span>
+            </button>
+          </h4>
+          <div id="faq-a1" class="accordion-panel" role="region" aria-labelledby="faq-q1">
+            <p>인스타그램 릴스, 유튜브 쇼츠, 네이버 클립에 같은 영상을 올려요. 쓰는 앱에서 "JJ픽"을 찾아 보세요.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h4 class="accordion-heading">
+            <button id="faq-q2" class="accordion-trigger" type="button" aria-expanded="false" aria-controls="faq-a2">
+              <span class="accordion-question">영상에서 본 제품은 어떻게 찾나요?</span>
+              <span class="accordion-state">펼치기</span>
+            </button>
+          </h4>
+          <div id="faq-a2" class="accordion-panel" role="region" aria-labelledby="faq-q2" hidden>
+            <p>영상 끝에 나오는 상품 번호를 기억했다가, 프로필 링크로 들어와 <a href="#picks">추천 상품</a>에서 같은 번호를 찾으면 돼요. 판매처 버튼으로 줄여 볼 수도 있어요.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h4 class="accordion-heading">
+            <button id="faq-q3" class="accordion-trigger" type="button" aria-expanded="false" aria-controls="faq-a3">
+              <span class="accordion-question">가격과 판매처 링크는 정확한가요?</span>
+              <span class="accordion-state">펼치기</span>
+            </button>
+          </h4>
+          <div id="faq-a3" class="accordion-panel" role="region" aria-labelledby="faq-q3" hidden>
+            <p>지금 페이지는 수업 실습용이라 예시 상품만 있어요. 가격은 실제와 다를 수 있고, 판매처 링크는 연결하지 않았어요.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h4 class="accordion-heading">
+            <button id="faq-q4" class="accordion-trigger" type="button" aria-expanded="false" aria-controls="faq-a4">
+              <span class="accordion-question">추천 요청은 실제로 접수되나요?</span>
+              <span class="accordion-state">펼치기</span>
+            </button>
+          </h4>
+          <div id="faq-a4" class="accordion-panel" role="region" aria-labelledby="faq-q4" hidden>
+            <p>아니요. <a href="#request">추천 요청</a>은 세 단계 흐름을 연습하는 화면이라 실제로 보내지지 않아요. 보낸 요청은 이 브라우저의 "내 요청 목록"에만 저장돼요.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h4 class="accordion-heading">
+            <button id="faq-q5" class="accordion-trigger" type="button" aria-expanded="false" aria-controls="faq-a5">
+              <span class="accordion-question">찜한 상품은 계속 남아 있나요?</span>
+              <span class="accordion-state">펼치기</span>
+            </button>
+          </h4>
+          <div id="faq-a5" class="accordion-panel" role="region" aria-labelledby="faq-q5" hidden>
+            <p>찜은 지금 보고 있는 화면에서만 기억해요. 새로 고침하면 찜이 모두 풀려요.</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- 추천 상품: JJ픽 추천 모음 화면을 예시 상품으로 재현 -->
@@ -155,7 +223,7 @@
       <p id="saveSummary" class="save-summary" aria-live="polite">마음에 드는 상품의 ♡ 찜하기를 눌러 보세요.</p>
 
       <ul class="product-list">
-        <li class="product-card" data-store="coupang">
+        <li class="product-card" data-store="coupang" data-detail="지름 28cm, 깊이 6cm라 볶음과 부침을 한 팬으로 해요|인덕션과 가스레인지에서 모두 쓸 수 있어요|처음 쓰기 전에 기름을 둘러 한 번 길들여야 해요">
           <span class="product-thumb" aria-hidden="true">🍳</span>
           <div class="product-info">
             <p class="product-meta"><span class="store-badge">쿠팡</span> 주방</p>
@@ -163,11 +231,14 @@
             <p class="product-desc">기름을 적게 써도 잘 눌어붙지 않아요</p>
             <div class="product-actions">
               <p class="product-price">32,900원</p>
-              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+              <div class="card-buttons">
+                <button type="button" class="pill-button detail-button" aria-haspopup="dialog" data-modal-open="#productModal">자세히 보기</button>
+                <button type="button" class="pill-button save-button" aria-pressed="false">♡ 찜하기</button>
+              </div>
             </div>
           </div>
         </li>
-        <li class="product-card" data-store="ohou">
+        <li class="product-card" data-store="ohou" data-detail="370ml부터 1,520ml까지 크기가 달라 겹쳐서 보관해요|몸통은 전자레인지에 넣어도 되지만 뚜껑은 빼고 데워요|김치를 담아도 냄새와 색이 잘 배지 않았어요">
           <span class="product-thumb" aria-hidden="true">🍱</span>
           <div class="product-info">
             <p class="product-meta"><span class="store-badge">오늘의집</span> 주방</p>
@@ -175,11 +246,14 @@
             <p class="product-desc">전자레인지와 오븐에 그대로 쓸 수 있어요</p>
             <div class="product-actions">
               <p class="product-price">24,800원</p>
-              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+              <div class="card-buttons">
+                <button type="button" class="pill-button detail-button" aria-haspopup="dialog" data-modal-open="#productModal">자세히 보기</button>
+                <button type="button" class="pill-button save-button" aria-pressed="false">♡ 찜하기</button>
+              </div>
             </div>
           </div>
         </li>
-        <li class="product-card" data-store="coupang">
+        <li class="product-card" data-store="coupang" data-detail="닭 한 마리가 통째로 들어가는 크기예요|바스켓과 망은 떼어서 식기세척기에 넣을 수 있어요|처음엔 빈 채로 10분 돌려서 새 제품 냄새를 빼요">
           <span class="product-thumb" aria-hidden="true">🍟</span>
           <div class="product-info">
             <p class="product-meta"><span class="store-badge">쿠팡</span> 가전</p>
@@ -187,11 +261,14 @@
             <p class="product-desc">바스켓을 분리해서 씻기 쉬워요</p>
             <div class="product-actions">
               <p class="product-price">89,000원</p>
-              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+              <div class="card-buttons">
+                <button type="button" class="pill-button detail-button" aria-haspopup="dialog" data-modal-open="#productModal">자세히 보기</button>
+                <button type="button" class="pill-button save-button" aria-pressed="false">♡ 찜하기</button>
+              </div>
             </div>
           </div>
         </li>
-        <li class="product-card" data-store="coupang">
+        <li class="product-card" data-store="coupang" data-detail="1kg 정도라 한 손으로 오래 들어도 덜 힘들어요|한 번 충전하면 20분쯤 써요|먼지통은 버튼 하나로 바로 비워요">
           <span class="product-thumb" aria-hidden="true">🧹</span>
           <div class="product-info">
             <p class="product-meta"><span class="store-badge">쿠팡</span> 가전</p>
@@ -199,11 +276,14 @@
             <p class="product-desc">소파 틈새와 차 안까지 가볍게 청소해요</p>
             <div class="product-actions">
               <p class="product-price">59,000원</p>
-              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+              <div class="card-buttons">
+                <button type="button" class="pill-button detail-button" aria-haspopup="dialog" data-modal-open="#productModal">자세히 보기</button>
+                <button type="button" class="pill-button save-button" aria-pressed="false">♡ 찜하기</button>
+              </div>
             </div>
           </div>
         </li>
-        <li class="product-card" data-store="ohou">
+        <li class="product-card" data-store="ohou" data-detail="펼치면 40L쯤 들어가고, 접으면 두께가 5cm 정도예요|손잡이가 있어 베란다까지 들고 가기 편해요|젖은 빨래를 오래 담아 두면 냄새가 날 수 있어요">
           <span class="product-thumb" aria-hidden="true">🧺</span>
           <div class="product-info">
             <p class="product-meta"><span class="store-badge">오늘의집</span> 리빙</p>
@@ -211,11 +291,14 @@
             <p class="product-desc">쓰지 않을 땐 납작하게 접어 둘 수 있어요</p>
             <div class="product-actions">
               <p class="product-price">15,900원</p>
-              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+              <div class="card-buttons">
+                <button type="button" class="pill-button detail-button" aria-haspopup="dialog" data-modal-open="#productModal">자세히 보기</button>
+                <button type="button" class="pill-button save-button" aria-pressed="false">♡ 찜하기</button>
+              </div>
             </div>
           </div>
         </li>
-        <li class="product-card" data-store="ohou">
+        <li class="product-card" data-store="ohou" data-detail="40×80cm 세면 수건 크기예요|처음 빨 때 섬유유연제를 빼면 물을 더 잘 먹어요|건조기에 넣어도 줄어든 게 거의 없었어요">
           <span class="product-thumb" aria-hidden="true">🛁</span>
           <div class="product-info">
             <p class="product-meta"><span class="store-badge">오늘의집</span> 리빙</p>
@@ -223,12 +306,41 @@
             <p class="product-desc">도톰하지만 빨리 말라요</p>
             <div class="product-actions">
               <p class="product-price">19,900원</p>
-              <button type="button" class="save-button" aria-pressed="false">♡ 찜하기</button>
+              <div class="card-buttons">
+                <button type="button" class="pill-button detail-button" aria-haspopup="dialog" data-modal-open="#productModal">자세히 보기</button>
+                <button type="button" class="pill-button save-button" aria-pressed="false">♡ 찜하기</button>
+              </div>
             </div>
           </div>
         </li>
       </ul>
       <p class="picks-note"><small>예시 상품이에요. 가격은 실제와 다를 수 있고, 판매처 링크는 연결하지 않았어요.</small></p>
+
+      <!-- 12주차: 모달 — "자세히 보기"를 누른 상품의 내용으로 채워서 연다. 닫으면 누른 버튼으로 돌아간다 -->
+      <dialog id="productModal" class="modal product-modal" aria-labelledby="productModalTitle" aria-describedby="productModalDesc">
+        <div class="modal-box">
+          <div class="modal-head">
+            <p id="productModalMeta" class="product-meta"></p>
+            <button class="modal-close" type="button" data-modal-close aria-label="자세히 보기 창 닫기"><span aria-hidden="true">✕</span></button>
+          </div>
+          <div class="product-modal-top">
+            <span id="productModalThumb" class="product-thumb" aria-hidden="true"></span>
+            <div>
+              <h3 id="productModalTitle"></h3>
+              <p id="productModalDesc" class="product-desc"></p>
+              <p id="productModalPrice" class="product-price"></p>
+            </div>
+          </div>
+          <h4 class="modal-subtitle">영상에서 확인한 점</h4>
+          <ul id="productModalPoints" class="panel-points"></ul>
+          <p id="productModalState" class="modal-state" aria-live="polite"></p>
+          <div class="step-buttons">
+            <button class="secondary-button" type="button" data-modal-close>닫기</button>
+            <button id="productModalSave" class="primary-button" type="button" aria-pressed="false">♡ 찜하기</button>
+          </div>
+          <p class="modal-note"><small>예시 상품이라 실제 제품 정보와 다를 수 있어요.</small></p>
+        </div>
+      </dialog>
     </section>
 
     <!-- 7주차: 추천 요청을 시작 → 제품 입력 → 조건 선택 → 확인 → 완료 흐름으로 -->
@@ -409,12 +521,15 @@
       </div>
 
       <!-- 요청 취소 확인 창 -->
-      <dialog id="cancelDialog" class="cancel-dialog" aria-labelledby="cancelTitle">
-        <h3 id="cancelTitle">요청을 취소할까요?</h3>
-        <p id="cancelText"></p>
-        <div class="step-buttons">
-          <button id="cancelKeep" class="secondary-button" type="button">그대로 두기</button>
-          <button id="cancelConfirm" class="primary-button danger-button" type="button">요청 취소하기</button>
+      <!-- 12주차: 상품 자세히 보기와 같은 모달 공통 클래스·동작(modal, data-modal-close)을 쓴다 -->
+      <dialog id="cancelDialog" class="modal cancel-dialog" aria-labelledby="cancelTitle" aria-describedby="cancelText">
+        <div class="modal-box">
+          <h3 id="cancelTitle">요청을 취소할까요?</h3>
+          <p id="cancelText"></p>
+          <div class="step-buttons">
+            <button id="cancelKeep" class="secondary-button" type="button" data-modal-close>그대로 두기</button>
+            <button id="cancelConfirm" class="primary-button danger-button" type="button">요청 취소하기</button>
+          </div>
         </div>
       </dialog>
 
@@ -428,6 +543,6 @@
   </footer>
 
   <!-- HTML 요소가 모두 만들어진 뒤 JavaScript를 실행하도록 body 끝에서 불러온다 -->
-  <script src="script.js?v=20261109"></script>
+  <script src="script.js?v=20261117"></script>
 </body>
 </html>
